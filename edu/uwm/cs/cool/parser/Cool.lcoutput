@@ -1,0 +1,2218 @@
+Recognition points
+
+Grammar
+
+    0 $accept: . program YYEOF
+
+    1 program: . class_list
+    2        | error .
+
+    3 class_list: . class_decl
+    4           | error . ';'
+    5           | class_list . class_decl
+    6           | class_list error . ';'
+
+    7 class_decl: . CLASS TYPEID formals superclass '{' feature_list '}'
+
+    8 superclass: . /* empty */
+    9           | EXTENDS . TYPEID actuals
+   10           | EXTENDS . NATIVE
+
+   11 feature_list: . /* empty */
+   12             | feature_list . feature ';'
+   13             | feature_list error . ';'
+   14             | feature_list . NATIVE ';'
+   15             | feature_list . '{' block '}'
+
+   16 feature: opt_override DEF OBJECTID formals ':' TYPEID '=' expr .
+   17        | opt_override DEF OBJECTID formals ':' TYPEID . NATIVE
+   18        | VAR OBJECTID ':' TYPEID '=' expr .
+   19        | VAR OBJECTID ':' . NATIVE
+
+   20 opt_override: . OVERRIDE
+   21             | . /* empty */
+
+   22 formals: '(' . ')'
+   23        | '(' . formal_list ')'
+   24        | '(' error . ')'
+
+   25 formal_list: . formal
+   26            | formal_list . ',' formal
+
+   27 formal: . OBJECTID ':' TYPEID
+
+   28 expr: OBJECTID '=' expr .
+   29     | SUPER '.' OBJECTID actuals .
+   30     | expr '.' OBJECTID actuals .
+   31     | IF '(' expr ')' expr ELSE expr .
+   32     | WHILE '(' expr ')' expr .
+   33     | . '{' block '}'
+   34     | expr MATCH '{' case_list '}' .
+   35     | . NEW TYPEID actuals
+   36     | expr '+' expr .
+   37     | expr '-' expr .
+   38     | expr '*' expr .
+   39     | expr '/' expr .
+   40     | '-' expr .
+   41     | expr '<' expr .
+   42     | expr EQ expr .
+   43     | expr EQEQ expr .
+   44     | expr LE expr .
+   45     | '!' expr .
+   46     | . '(' expr ')'
+   47     | . NULL
+   48     | . INT_LIT
+   49     | . STR_LIT
+   50     | . BOOL_LIT
+   51     | OBJECTID .
+   52     | OBJECTID . actuals
+
+   53 block: . stmt_list
+
+   54 stmt_list: expr ';' .
+   55          | expr .
+   56          | error .
+   57          | expr ';' . stmt_list
+   58          | VAR OBJECTID ':' TYPEID '=' expr ';' stmt_list .
+   59          | error . ';' stmt_list
+
+   60 actuals: '(' . ')'
+   61        | '(' . exp_list ')'
+
+   62 exp_list: . expr
+   63         | exp_list . ',' expr
+
+   64 case_list: . simple_cases
+
+   65 simple_cases: . simple_case
+   66             | simple_cases . simple_case
+
+   67 simple_case: . CASE OBJECTID ':' TYPEID ARROW expr
+
+
+state 0 ( based on state 0 )
+
+    _: ? . program
+    program: . error
+    program: . class_list
+
+    CLASS	announce rule program: class_list
+
+    error	go to state 1
+
+
+state 1 ( based on state 1 )
+
+    program: error .
+
+    $default	announce rule program: error
+
+
+state 2 ( based on state 0 )
+
+    _: ? . class_list
+    class_list: . error ';'
+    class_list: . class_list error ';'
+    class_list: . class_list class_decl
+    class_list: . class_decl
+
+    CLASS	announce rule class_list: class_decl
+
+    class_list	go to state 3
+    error	go to state 5
+
+
+state 3 ( based on state 4 )
+
+    _: ? class_list .
+    class_list: class_list . class_decl
+    class_list: class_list . error ';'
+
+    CLASS	announce rule class_list: class_list class_decl
+    $default	accept class_list
+
+    error	go to state 4
+
+
+state 4 ( based on state 9 )
+
+    class_list: class_list error . ';'
+
+    ';'	announce rule class_list: class_list error ';'
+
+
+state 5 ( based on state 1 )
+
+    class_list: error . ';'
+
+    ';'	announce rule class_list: error ';'
+
+
+state 6 ( based on state 0 )
+
+    _: ? . class_decl
+    class_decl: . CLASS TYPEID formals superclass '{' feature_list '}'
+
+    CLASS	announce rule class_decl: CLASS TYPEID formals superclass '{' feature_list '}'
+
+
+state 7 ( based on state 7 )
+
+    _: ? . formals
+    formals: . '(' ')'
+    formals: . '(' error ')'
+    formals: . '(' formal_list ')'
+
+    '('	shift, and go to 8
+
+
+state 8 ( based on state 11 )
+
+    formals: '(' . ')'
+    formals: '(' . formal_list ')'
+    formals: '(' . error ')'
+
+    OBJECTID	announce rule formals: '(' formal_list ')'
+    ')'	announce rule formals: '(' ')'
+
+    error	go to state 9
+
+
+state 9 ( based on state 14 )
+
+    formals: '(' error . ')'
+
+    ')'	announce rule formals: '(' error ')'
+
+
+state 10 ( based on state 12 )
+
+    _: ? . superclass
+    superclass: . EXTENDS TYPEID actuals
+    superclass: .
+    superclass: . EXTENDS NATIVE
+
+    EXTENDS	shift, and go to 11
+    $default	announce rule superclass: /* empty */
+
+
+state 11 ( based on state 19 )
+
+    superclass: EXTENDS . TYPEID actuals
+    superclass: EXTENDS . NATIVE
+
+    NATIVE	announce rule superclass: EXTENDS NATIVE
+    TYPEID	announce rule superclass: EXTENDS TYPEID actuals
+
+
+state 12 ( based on state 27 )
+
+    _: ? . feature_list
+    feature_list: .
+    feature_list: . feature_list error ';'
+    feature_list: . feature_list '{' block '}'
+    feature_list: . feature_list feature ';'
+    feature_list: . feature_list NATIVE ';'
+
+    $default	announce rule feature_list: /* empty */
+
+    feature_list	go to state 13
+
+
+state 13 ( based on state 32 )
+
+    _: ? feature_list .
+    feature_list: feature_list . feature ';'
+    feature_list: feature_list . '{' block '}'
+    feature_list: feature_list . NATIVE ';'
+    feature_list: feature_list . error ';'
+
+    '}'	accept feature_list
+    NATIVE	announce rule feature_list: feature_list NATIVE ';'
+    '{'	announce rule feature_list: feature_list '{' block '}'
+    DEF	announce rule feature_list: feature_list feature ';'
+    OVERRIDE	announce rule feature_list: feature_list feature ';'
+    VAR	announce rule feature_list: feature_list feature ';'
+    $default	accept feature_list
+
+    error	go to state 14
+
+
+state 14 ( based on state 49 )
+
+    feature_list: feature_list error . ';'
+
+    ';'	announce rule feature_list: feature_list error ';'
+
+
+state 15 ( based on state 26 )
+
+    _: ? . actuals
+    actuals: . '(' exp_list ')'
+    actuals: . '(' ')'
+
+    '('	shift, and go to 16
+
+
+state 16 ( based on state 30 )
+
+    actuals: '(' . ')'
+    actuals: '(' . exp_list ')'
+
+    OBJECTID	announce rule actuals: '(' exp_list ')'
+    WHILE	announce rule actuals: '(' exp_list ')'
+    SUPER	announce rule actuals: '(' exp_list ')'
+    NULL	announce rule actuals: '(' exp_list ')'
+    BOOL_LIT	announce rule actuals: '(' exp_list ')'
+    '!'	announce rule actuals: '(' exp_list ')'
+    INT_LIT	announce rule actuals: '(' exp_list ')'
+    '('	announce rule actuals: '(' exp_list ')'
+    STR_LIT	announce rule actuals: '(' exp_list ')'
+    '{'	announce rule actuals: '(' exp_list ')'
+    IF	announce rule actuals: '(' exp_list ')'
+    '-'	announce rule actuals: '(' exp_list ')'
+    ')'	announce rule actuals: '(' ')'
+    NEW	announce rule actuals: '(' exp_list ')'
+
+
+state 17 ( based on state 32 )
+
+    _: ? . feature
+    feature: . VAR OBJECTID ':' TYPEID '=' expr
+    opt_override: .
+    feature: . VAR OBJECTID ':' NATIVE
+    feature: . opt_override DEF OBJECTID formals ':' TYPEID '=' expr
+    opt_override: . OVERRIDE
+    feature: . opt_override DEF OBJECTID formals ':' TYPEID NATIVE
+
+    DEF	announce rule opt_override: /* empty */
+    OVERRIDE	announce rule opt_override: OVERRIDE
+    VAR	shift, and go to 18
+    $default	announce rule opt_override: /* empty */
+
+    opt_override	go to state 70
+
+
+state 18 ( based on state 52 )
+
+    feature: VAR . OBJECTID ':' TYPEID '=' expr
+    feature: VAR . OBJECTID ':' NATIVE
+
+    OBJECTID	shift, and go to 19
+
+
+state 19 ( based on state 85 )
+
+    feature: VAR OBJECTID . ':' TYPEID '=' expr
+    feature: VAR OBJECTID . ':' NATIVE
+
+    ':'	shift, and go to 20
+
+
+state 20 ( based on state 110 )
+
+    feature: VAR OBJECTID ':' . TYPEID '=' expr
+    feature: VAR OBJECTID ':' . NATIVE
+
+    NATIVE	announce rule feature: VAR OBJECTID ':' NATIVE
+    TYPEID	shift, and go to 21
+
+
+state 21 ( based on state 125 )
+
+    feature: VAR OBJECTID ':' TYPEID . '=' expr
+
+    '='	shift, and go to 22
+
+
+state 22 ( based on state 133 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    feature: VAR OBJECTID ':' TYPEID '=' . expr
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 69
+
+
+state 23 ( based on state 41 )
+
+    expr: OBJECTID . actuals
+    expr: OBJECTID . '=' expr
+    expr: OBJECTID .
+
+    '='	shift, and go to 24
+    '('	announce rule expr: OBJECTID actuals
+    $default	announce rule expr: OBJECTID
+
+
+state 24 ( based on state 61 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: OBJECTID '=' . expr
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 68
+
+
+state 25 ( based on state 37 )
+
+    expr: WHILE . '(' expr ')' expr
+
+    '('	shift, and go to 26
+
+
+state 26 ( based on state 60 )
+
+    expr: WHILE '(' . expr ')' expr
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 65
+
+
+state 27 ( based on state 36 )
+
+    expr: SUPER . '.' OBJECTID actuals
+
+    '.'	shift, and go to 28
+
+
+state 28 ( based on state 59 )
+
+    expr: SUPER '.' . OBJECTID actuals
+
+    OBJECTID	shift, and go to 29
+
+
+state 29 ( based on state 91 )
+
+    actuals: . '(' exp_list ')'
+    actuals: . '(' ')'
+    expr: SUPER '.' OBJECTID . actuals
+
+    '('	shift, and go to 16
+
+    actuals	go to state 30
+
+
+state 30 ( based on state 114 )
+
+    expr: SUPER '.' OBJECTID actuals .
+
+    $default	announce rule expr: SUPER '.' OBJECTID actuals
+
+
+state 31 ( based on state 46 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: '!' . expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 64
+
+
+state 32 ( based on state 33 )
+
+    expr: IF . '(' expr ')' expr ELSE expr
+
+    '('	shift, and go to 33
+
+
+state 33 ( based on state 57 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: IF '(' . expr ')' expr ELSE expr
+    expr: . expr '<' expr
+    expr: . INT_LIT
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 39
+
+
+state 34 ( based on state 42 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: '-' . expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 35
+
+
+state 35 ( based on state 63 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: '-' expr .
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    $default	announce rule expr: '-' expr
+
+
+state 36 ( based on state 80 )
+
+    expr: expr '.' . OBJECTID actuals
+
+    OBJECTID	shift, and go to 37
+
+
+state 37 ( based on state 108 )
+
+    expr: expr '.' OBJECTID . actuals
+    actuals: . '(' exp_list ')'
+    actuals: . '(' ')'
+
+    '('	shift, and go to 16
+
+    actuals	go to state 38
+
+
+state 38 ( based on state 123 )
+
+    expr: expr '.' OBJECTID actuals .
+
+    $default	announce rule expr: expr '.' OBJECTID actuals
+
+
+state 39 ( based on state 89 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: IF '(' expr . ')' expr ELSE expr
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	shift, and go to 40
+    EQ	shift, and go to 50
+    '*'	shift, and go to 42
+    MATCH	shift, and go to 52
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	shift, and go to 60
+    ')'	shift, and go to 56
+    LE	shift, and go to 62
+
+
+state 40 ( based on state 73 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: expr EQEQ . expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 41
+
+
+state 41 ( based on state 101 )
+
+    expr: expr . '<' expr
+    expr: expr EQEQ expr .
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	error (nonassociative)
+    '*'	shift, and go to 42
+    EQ	error (nonassociative)
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	error (nonassociative)
+    LE	error (nonassociative)
+    $default	announce rule expr: expr EQEQ expr
+
+
+state 42 ( based on state 78 )
+
+    expr: . expr '.' OBJECTID actuals
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: expr '*' . expr
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 43
+
+
+state 43 ( based on state 106 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr '*' expr .
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    $default	announce rule expr: expr '*' expr
+
+
+state 44 ( based on state 79 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: expr '/' . expr
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 45
+
+
+state 45 ( based on state 107 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr '/' expr .
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    $default	announce rule expr: expr '/' expr
+
+
+state 46 ( based on state 76 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: expr '-' . expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 47
+
+
+state 47 ( based on state 104 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr '-' expr .
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    '*'	shift, and go to 42
+    '/'	shift, and go to 44
+    $default	announce rule expr: expr '-' expr
+
+
+state 48 ( based on state 77 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: expr '+' . expr
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 49
+
+
+state 49 ( based on state 105 )
+
+    expr: expr . '<' expr
+    expr: expr '+' expr .
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    '*'	shift, and go to 42
+    '/'	shift, and go to 44
+    $default	announce rule expr: expr '+' expr
+
+
+state 50 ( based on state 71 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: expr EQ . expr
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 51
+
+
+state 51 ( based on state 99 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr EQ expr .
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	error (nonassociative)
+    '*'	shift, and go to 42
+    EQ	error (nonassociative)
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	error (nonassociative)
+    LE	error (nonassociative)
+    $default	announce rule expr: expr EQ expr
+
+
+state 52 ( based on state 72 )
+
+    expr: expr MATCH . '{' case_list '}'
+
+    '{'	shift, and go to 53
+
+
+state 53 ( based on state 100 )
+
+    expr: expr MATCH '{' . case_list '}'
+    case_list: . simple_cases
+
+    CASE	announce rule case_list: simple_cases
+
+    case_list	go to state 54
+
+
+state 54 ( based on state 120 )
+
+    expr: expr MATCH '{' case_list . '}'
+
+    '}'	shift, and go to 55
+
+
+state 55 ( based on state 131 )
+
+    expr: expr MATCH '{' case_list '}' .
+
+    $default	announce rule expr: expr MATCH '{' case_list '}'
+
+
+state 56 ( based on state 113 )
+
+    expr: . expr '.' OBJECTID actuals
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: IF '(' expr ')' . expr ELSE expr
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 57
+
+
+state 57 ( based on state 127 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: IF '(' expr ')' expr . ELSE expr
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	shift, and go to 40
+    EQ	shift, and go to 50
+    '*'	shift, and go to 42
+    MATCH	shift, and go to 52
+    '/'	shift, and go to 44
+    ELSE	shift, and go to 58
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	shift, and go to 60
+    LE	shift, and go to 62
+
+
+state 58 ( based on state 135 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: IF '(' expr ')' expr ELSE . expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 59
+
+
+state 59 ( based on state 140 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: IF '(' expr ')' expr ELSE expr .
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	shift, and go to 40
+    EQ	shift, and go to 50
+    '*'	shift, and go to 42
+    MATCH	shift, and go to 52
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	shift, and go to 60
+    LE	shift, and go to 62
+    $default	announce rule expr: IF '(' expr ')' expr ELSE expr
+
+
+state 60 ( based on state 75 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: expr '<' . expr
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 61
+
+
+state 61 ( based on state 103 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr '<' expr .
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	error (nonassociative)
+    '*'	shift, and go to 42
+    EQ	error (nonassociative)
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	error (nonassociative)
+    LE	error (nonassociative)
+    $default	announce rule expr: expr '<' expr
+
+
+state 62 ( based on state 74 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: expr LE . expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 63
+
+
+state 63 ( based on state 102 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr LE expr .
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	error (nonassociative)
+    '*'	shift, and go to 42
+    EQ	error (nonassociative)
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	error (nonassociative)
+    LE	error (nonassociative)
+    $default	announce rule expr: expr LE expr
+
+
+state 64 ( based on state 70 )
+
+    expr: expr . '<' expr
+    expr: '!' expr .
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    $default	announce rule expr: '!' expr
+
+
+state 65 ( based on state 92 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: WHILE '(' expr . ')' expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	shift, and go to 40
+    EQ	shift, and go to 50
+    '*'	shift, and go to 42
+    MATCH	shift, and go to 52
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	shift, and go to 60
+    ')'	shift, and go to 66
+    LE	shift, and go to 62
+
+
+state 66 ( based on state 115 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: WHILE '(' expr ')' . expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . '!' expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 67
+
+
+state 67 ( based on state 128 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: WHILE '(' expr ')' expr .
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	shift, and go to 40
+    EQ	shift, and go to 50
+    '*'	shift, and go to 42
+    MATCH	shift, and go to 52
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	shift, and go to 60
+    LE	shift, and go to 62
+    $default	announce rule expr: WHILE '(' expr ')' expr
+
+
+state 68 ( based on state 93 )
+
+    expr: expr . '<' expr
+    expr: OBJECTID '=' expr .
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	shift, and go to 40
+    EQ	shift, and go to 50
+    '*'	shift, and go to 42
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	shift, and go to 60
+    LE	shift, and go to 62
+    $default	announce rule expr: OBJECTID '=' expr
+
+
+state 69 ( based on state 138 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    feature: VAR OBJECTID ':' TYPEID '=' expr .
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	shift, and go to 40
+    EQ	shift, and go to 50
+    '*'	shift, and go to 42
+    MATCH	shift, and go to 52
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	shift, and go to 60
+    LE	shift, and go to 62
+    $default	announce rule feature: VAR OBJECTID ':' TYPEID '=' expr
+
+
+state 70 ( based on state 56 )
+
+    feature: opt_override . DEF OBJECTID formals ':' TYPEID '=' expr
+    feature: opt_override . DEF OBJECTID formals ':' TYPEID NATIVE
+
+    DEF	shift, and go to 71
+
+
+state 71 ( based on state 88 )
+
+    feature: opt_override DEF . OBJECTID formals ':' TYPEID '=' expr
+    feature: opt_override DEF . OBJECTID formals ':' TYPEID NATIVE
+
+    OBJECTID	shift, and go to 72
+
+
+state 72 ( based on state 112 )
+
+    feature: opt_override DEF OBJECTID . formals ':' TYPEID NATIVE
+    formals: . '(' ')'
+    formals: . '(' error ')'
+    feature: opt_override DEF OBJECTID . formals ':' TYPEID '=' expr
+    formals: . '(' formal_list ')'
+
+    '('	shift, and go to 8
+
+    formals	go to state 73
+
+
+state 73 ( based on state 126 )
+
+    feature: opt_override DEF OBJECTID formals . ':' TYPEID NATIVE
+    feature: opt_override DEF OBJECTID formals . ':' TYPEID '=' expr
+
+    ':'	shift, and go to 74
+
+
+state 74 ( based on state 134 )
+
+    feature: opt_override DEF OBJECTID formals ':' . TYPEID NATIVE
+    feature: opt_override DEF OBJECTID formals ':' . TYPEID '=' expr
+
+    TYPEID	shift, and go to 75
+
+
+state 75 ( based on state 139 )
+
+    feature: opt_override DEF OBJECTID formals ':' TYPEID . NATIVE
+    feature: opt_override DEF OBJECTID formals ':' TYPEID . '=' expr
+
+    '='	shift, and go to 76
+    NATIVE	announce rule feature: opt_override DEF OBJECTID formals ':' TYPEID NATIVE
+
+
+state 76 ( based on state 144 )
+
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    feature: opt_override DEF OBJECTID formals ':' TYPEID '=' . expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 77
+
+
+state 77 ( based on state 147 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    feature: opt_override DEF OBJECTID formals ':' TYPEID '=' expr .
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	shift, and go to 40
+    EQ	shift, and go to 50
+    '*'	shift, and go to 42
+    MATCH	shift, and go to 52
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	shift, and go to 60
+    LE	shift, and go to 62
+    $default	announce rule feature: opt_override DEF OBJECTID formals ':' TYPEID '=' expr
+
+
+state 78 ( based on state 53 )
+
+    _: ? . block
+    block: . stmt_list
+
+    OBJECTID	announce rule block: stmt_list
+    WHILE	announce rule block: stmt_list
+    SUPER	announce rule block: stmt_list
+    NULL	announce rule block: stmt_list
+    BOOL_LIT	announce rule block: stmt_list
+    VAR	announce rule block: stmt_list
+    '!'	announce rule block: stmt_list
+    INT_LIT	announce rule block: stmt_list
+    '('	announce rule block: stmt_list
+    STR_LIT	announce rule block: stmt_list
+    '{'	announce rule block: stmt_list
+    IF	announce rule block: stmt_list
+    '-'	announce rule block: stmt_list
+    NEW	announce rule block: stmt_list
+
+
+state 79 ( based on state 11 )
+
+    _: ? . formal_list
+    formal_list: . formal
+    formal_list: . formal_list ',' formal
+
+    OBJECTID	announce rule formal_list: formal
+
+    formal_list	go to state 80
+
+
+state 80 ( based on state 17 )
+
+    _: ? formal_list .
+    formal_list: formal_list . ',' formal
+
+    ','	announce rule formal_list: formal_list ',' formal
+    ')'	accept formal_list
+    $default	accept formal_list
+
+
+state 81 ( based on state 11 )
+
+    _: ? . formal
+    formal: . OBJECTID ':' TYPEID
+
+    OBJECTID	announce rule formal: OBJECTID ':' TYPEID
+
+
+state 82 ( based on state 44 )
+
+    _: ? . expr
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 83
+
+
+state 83 ( based on state 69 )
+
+    _: ? expr .
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	shift, and go to 40
+    EQ	shift, and go to 50
+    '*'	shift, and go to 42
+    MATCH	shift, and go to 52
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	shift, and go to 60
+    ')'	accept expr
+    LE	shift, and go to 62
+    $default	accept expr
+
+
+state 84 ( based on state 43 )
+
+    _: ? . stmt_list
+    expr: . NEW TYPEID actuals
+    stmt_list: . error
+    expr: . OBJECTID actuals
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    stmt_list: . expr ';'
+    expr: . expr '<' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . expr '.' OBJECTID actuals
+    expr: . expr LE expr
+    stmt_list: . error ';' stmt_list
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . expr '+' expr
+    expr: . '!' expr
+    expr: . '{' block '}'
+    stmt_list: . expr ';' stmt_list
+    expr: . expr '/' expr
+    stmt_list: . expr
+    expr: . expr EQEQ expr
+    stmt_list: . VAR OBJECTID ':' TYPEID '=' expr ';' stmt_list
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . WHILE '(' expr ')' expr
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    VAR	shift, and go to 85
+    '!'	shift, and go to 31
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 92
+    error	go to state 94
+
+
+state 85 ( based on state 65 )
+
+    stmt_list: VAR . OBJECTID ':' TYPEID '=' expr ';' stmt_list
+
+    OBJECTID	shift, and go to 86
+
+
+state 86 ( based on state 95 )
+
+    stmt_list: VAR OBJECTID . ':' TYPEID '=' expr ';' stmt_list
+
+    ':'	shift, and go to 87
+
+
+state 87 ( based on state 117 )
+
+    stmt_list: VAR OBJECTID ':' . TYPEID '=' expr ';' stmt_list
+
+    TYPEID	shift, and go to 88
+
+
+state 88 ( based on state 129 )
+
+    stmt_list: VAR OBJECTID ':' TYPEID . '=' expr ';' stmt_list
+
+    '='	shift, and go to 89
+
+
+state 89 ( based on state 136 )
+
+    stmt_list: VAR OBJECTID ':' TYPEID '=' . expr ';' stmt_list
+    expr: . NEW TYPEID actuals
+    expr: . expr LE expr
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . OBJECTID actuals
+    expr: . expr '+' expr
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . '!' expr
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . '{' block '}'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '/' expr
+    expr: . expr EQEQ expr
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    expr: . expr '<' expr
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . expr MATCH '{' case_list '}'
+    expr: . WHILE '(' expr ')' expr
+    expr: . expr '.' OBJECTID actuals
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    '!'	shift, and go to 31
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 90
+
+
+state 90 ( based on state 141 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    stmt_list: VAR OBJECTID ':' TYPEID '=' expr . ';' stmt_list
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '+' expr
+    expr: expr . '/' expr
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	shift, and go to 40
+    EQ	shift, and go to 50
+    '*'	shift, and go to 42
+    ';'	shift, and go to 91
+    MATCH	shift, and go to 52
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	shift, and go to 60
+    LE	shift, and go to 62
+
+
+state 91 ( based on state 145 )
+
+    expr: . NEW TYPEID actuals
+    stmt_list: . error
+    expr: . OBJECTID actuals
+    expr: . expr EQ expr
+    expr: . STR_LIT
+    expr: . IF '(' expr ')' expr ELSE expr
+    expr: . OBJECTID
+    expr: . '(' expr ')'
+    expr: . SUPER '.' OBJECTID actuals
+    expr: . expr '*' expr
+    expr: . INT_LIT
+    stmt_list: . expr ';'
+    expr: . expr '<' expr
+    stmt_list: VAR OBJECTID ':' TYPEID '=' expr ';' . stmt_list
+    expr: . expr MATCH '{' case_list '}'
+    expr: . expr '.' OBJECTID actuals
+    expr: . expr LE expr
+    stmt_list: . error ';' stmt_list
+    expr: . BOOL_LIT
+    expr: . expr '-' expr
+    expr: . NULL
+    expr: . expr '+' expr
+    expr: . '!' expr
+    expr: . '{' block '}'
+    stmt_list: . expr ';' stmt_list
+    expr: . expr '/' expr
+    stmt_list: . expr
+    expr: . expr EQEQ expr
+    stmt_list: . VAR OBJECTID ':' TYPEID '=' expr ';' stmt_list
+    expr: . OBJECTID '=' expr
+    expr: . '-' expr
+    expr: . WHILE '(' expr ')' expr
+
+    OBJECTID	shift, and go to 23
+    WHILE	shift, and go to 25
+    SUPER	shift, and go to 27
+    NULL	announce rule expr: NULL
+    BOOL_LIT	announce rule expr: BOOL_LIT
+    VAR	shift, and go to 85
+    '!'	shift, and go to 31
+    INT_LIT	announce rule expr: INT_LIT
+    '('	announce rule expr: '(' expr ')'
+    STR_LIT	announce rule expr: STR_LIT
+    '{'	announce rule expr: '{' block '}'
+    IF	shift, and go to 32
+    '-'	shift, and go to 34
+    NEW	announce rule expr: NEW TYPEID actuals
+
+    expr	go to state 92
+    error	go to state 94
+    stmt_list	go to state 95
+
+
+state 92 ( based on state 66 )
+
+    expr: expr . '<' expr
+    expr: expr . EQ expr
+    expr: expr . '*' expr
+    expr: expr . '.' OBJECTID actuals
+    stmt_list: expr .
+    expr: expr . LE expr
+    expr: expr . EQEQ expr
+    expr: expr . '+' expr
+    expr: expr . MATCH '{' case_list '}'
+    expr: expr . '/' expr
+    stmt_list: expr . ';' stmt_list
+    stmt_list: expr . ';'
+    expr: expr . '-' expr
+
+    '.'	shift, and go to 36
+    EQEQ	shift, and go to 40
+    EQ	shift, and go to 50
+    '*'	shift, and go to 42
+    ';'	shift, and go to 93
+    MATCH	shift, and go to 52
+    '/'	shift, and go to 44
+    '-'	shift, and go to 46
+    '+'	shift, and go to 48
+    '<'	shift, and go to 60
+    LE	shift, and go to 62
+    $default	announce rule stmt_list: expr
+
+
+state 93 ( based on state 96 )
+
+    stmt_list: expr ';' .
+    stmt_list: expr ';' . stmt_list
+
+    '}'	announce rule stmt_list: expr ';'
+    OBJECTID	announce rule stmt_list: expr ';' stmt_list
+    WHILE	announce rule stmt_list: expr ';' stmt_list
+    SUPER	announce rule stmt_list: expr ';' stmt_list
+    NULL	announce rule stmt_list: expr ';' stmt_list
+    BOOL_LIT	announce rule stmt_list: expr ';' stmt_list
+    VAR	announce rule stmt_list: expr ';' stmt_list
+    '!'	announce rule stmt_list: expr ';' stmt_list
+    INT_LIT	announce rule stmt_list: expr ';' stmt_list
+    '('	announce rule stmt_list: expr ';' stmt_list
+    STR_LIT	announce rule stmt_list: expr ';' stmt_list
+    '{'	announce rule stmt_list: expr ';' stmt_list
+    IF	announce rule stmt_list: expr ';' stmt_list
+    '-'	announce rule stmt_list: expr ';' stmt_list
+    NEW	announce rule stmt_list: expr ';' stmt_list
+    $default	announce rule stmt_list: expr ';'
+
+
+state 94 ( based on state 64 )
+
+    stmt_list: error . ';' stmt_list
+    stmt_list: error .
+
+    ';'	announce rule stmt_list: error ';' stmt_list
+    $default	announce rule stmt_list: error
+
+
+state 95 ( based on state 148 )
+
+    stmt_list: VAR OBJECTID ':' TYPEID '=' expr ';' stmt_list .
+
+    $default	announce rule stmt_list: VAR OBJECTID ':' TYPEID '=' expr ';' stmt_list
+
+
+state 96 ( based on state 30 )
+
+    _: ? . exp_list
+    exp_list: . expr
+    exp_list: . exp_list ',' expr
+
+    OBJECTID	announce rule exp_list: expr
+    WHILE	announce rule exp_list: expr
+    SUPER	announce rule exp_list: expr
+    NULL	announce rule exp_list: expr
+    BOOL_LIT	announce rule exp_list: expr
+    '!'	announce rule exp_list: expr
+    INT_LIT	announce rule exp_list: expr
+    '('	announce rule exp_list: expr
+    STR_LIT	announce rule exp_list: expr
+    '{'	announce rule exp_list: expr
+    IF	announce rule exp_list: expr
+    '-'	announce rule exp_list: expr
+    NEW	announce rule exp_list: expr
+
+    exp_list	go to state 97
+
+
+state 97 ( based on state 48 )
+
+    _: ? exp_list .
+    exp_list: exp_list . ',' expr
+
+    ','	announce rule exp_list: exp_list ',' expr
+    ')'	accept exp_list
+    $default	accept exp_list
+
+
+state 98 ( based on state 100 )
+
+    _: ? . simple_cases
+    simple_cases: . simple_case
+    simple_cases: . simple_cases simple_case
+
+    CASE	announce rule simple_cases: simple_case
+
+    simple_cases	go to state 99
+
+
+state 99 ( based on state 121 )
+
+    _: ? simple_cases .
+    simple_cases: simple_cases . simple_case
+
+    CASE	announce rule simple_cases: simple_cases simple_case
+    $default	accept simple_cases
+
+
+state 100 ( based on state 100 )
+
+    _: ? . simple_case
+    simple_case: . CASE OBJECTID ':' TYPEID ARROW expr
+
+    CASE	announce rule simple_case: CASE OBJECTID ':' TYPEID ARROW expr
+
+
+

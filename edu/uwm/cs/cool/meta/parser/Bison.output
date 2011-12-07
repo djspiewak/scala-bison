@@ -1,0 +1,690 @@
+Grammar
+
+    0 $accept: grammar $end
+
+    1 grammar: declarations BEGIN rules END
+
+    2 declarations: /* empty */
+
+    3 @1: /* empty */
+
+    4 declarations: declarations @1 declaration
+
+    5 declaration: PROLOGUE_BEGIN rev_pieces PROLOGUE_END
+    6            | TOKEN token_names
+
+    7 @2: /* empty */
+
+    8 declaration: precedence @2 token_names
+
+    9 @3: /* empty */
+
+   10 declaration: TYPE TYPELIT @3 nonterminal_names
+   11            | START ID
+
+   12 token_names: token_names token_name
+   13            | token_name
+
+   14 token_name: ID
+   15           | TYPELIT
+
+   16 nonterminal_names: nonterminal_names nonterminal_name
+   17                  | nonterminal_name
+
+   18 nonterminal_name: ID
+
+   19 precedence: LEFT
+   20           | RIGHT
+   21           | NONASSOC
+
+   22 rules: /* empty */
+   23      | rules rule
+
+   24 @4: /* empty */
+
+   25 rule: ID ':' rhs action @4 morerules ';'
+
+   26 morerules: /* empty */
+   27          | morerules '|' rhs action
+
+   28 rhs: /* empty */
+   29    | rhs symbol
+   30    | rhs anon symbol
+
+   31 anon: block
+
+   32 symbol: ID
+   33       | CHARLIT
+
+   34 action: block
+   35       | PREC symbol block
+   36       | PREC symbol
+   37       | /* empty */
+
+   38 block: '{' rev_pieces '}'
+
+   39 rev_pieces: /* empty */
+   40           | rev_pieces piece
+
+   41 piece: block
+   42      | CODE
+   43      | VAR
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+':' (58) 25
+';' (59) 25
+'{' (123) 38
+'|' (124) 27
+'}' (125) 38
+error (256)
+CHARLIT (258) 33
+ID (259) 11 14 18 25 32
+BEGIN (260) 1
+PROLOGUE_BEGIN (261) 5
+PROLOGUE_END (262) 5
+LEFT (263) 19
+RIGHT (264) 20
+NONASSOC (265) 21
+TOKEN (266) 6
+TYPE (267) 10
+START (268) 11
+PREC (269) 35 36
+VAR (270) 43
+TYPELIT (271) 10 15
+CODE (272) 42
+END (273) 1
+
+
+Nonterminals, with rules where they appear
+
+$accept (24)
+    on left: 0
+grammar (25)
+    on left: 1, on right: 0
+declarations (26)
+    on left: 2 4, on right: 1 4
+@1 (27)
+    on left: 3, on right: 4
+declaration (28)
+    on left: 5 6 8 10 11, on right: 4
+@2 (29)
+    on left: 7, on right: 8
+@3 (30)
+    on left: 9, on right: 10
+token_names (31)
+    on left: 12 13, on right: 6 8 12
+token_name (32)
+    on left: 14 15, on right: 12 13
+nonterminal_names (33)
+    on left: 16 17, on right: 10 16
+nonterminal_name (34)
+    on left: 18, on right: 16 17
+precedence (35)
+    on left: 19 20 21, on right: 8
+rules (36)
+    on left: 22 23, on right: 1 23
+rule (37)
+    on left: 25, on right: 23
+@4 (38)
+    on left: 24, on right: 25
+morerules (39)
+    on left: 26 27, on right: 25 27
+rhs (40)
+    on left: 28 29 30, on right: 25 27 29 30
+anon (41)
+    on left: 31, on right: 30
+symbol (42)
+    on left: 32 33, on right: 29 30 35 36
+action (43)
+    on left: 34 35 36 37, on right: 25 27
+block (44)
+    on left: 38, on right: 31 34 35 41
+rev_pieces (45)
+    on left: 39 40, on right: 5 38 40
+piece (46)
+    on left: 41 42 43, on right: 40
+
+
+state 0
+
+    0 $accept: . grammar $end
+
+    $default  reduce using rule 2 (declarations)
+
+    grammar       go to state 1
+    declarations  go to state 2
+
+
+state 1
+
+    0 $accept: grammar . $end
+
+    $end  shift, and go to state 3
+
+
+state 2
+
+    1 grammar: declarations . BEGIN rules END
+    4 declarations: declarations . @1 declaration
+
+    BEGIN  shift, and go to state 4
+
+    $default  reduce using rule 3 (@1)
+
+    @1  go to state 5
+
+
+state 3
+
+    0 $accept: grammar $end .
+
+    $default  accept
+
+
+state 4
+
+    1 grammar: declarations BEGIN . rules END
+
+    $default  reduce using rule 22 (rules)
+
+    rules  go to state 6
+
+
+state 5
+
+    4 declarations: declarations @1 . declaration
+
+    PROLOGUE_BEGIN  shift, and go to state 7
+    LEFT            shift, and go to state 8
+    RIGHT           shift, and go to state 9
+    NONASSOC        shift, and go to state 10
+    TOKEN           shift, and go to state 11
+    TYPE            shift, and go to state 12
+    START           shift, and go to state 13
+
+    declaration  go to state 14
+    precedence   go to state 15
+
+
+state 6
+
+    1 grammar: declarations BEGIN rules . END
+   23 rules: rules . rule
+
+    ID   shift, and go to state 16
+    END  shift, and go to state 17
+
+    rule  go to state 18
+
+
+state 7
+
+    5 declaration: PROLOGUE_BEGIN . rev_pieces PROLOGUE_END
+
+    $default  reduce using rule 39 (rev_pieces)
+
+    rev_pieces  go to state 19
+
+
+state 8
+
+   19 precedence: LEFT .
+
+    $default  reduce using rule 19 (precedence)
+
+
+state 9
+
+   20 precedence: RIGHT .
+
+    $default  reduce using rule 20 (precedence)
+
+
+state 10
+
+   21 precedence: NONASSOC .
+
+    $default  reduce using rule 21 (precedence)
+
+
+state 11
+
+    6 declaration: TOKEN . token_names
+
+    ID       shift, and go to state 20
+    TYPELIT  shift, and go to state 21
+
+    token_names  go to state 22
+    token_name   go to state 23
+
+
+state 12
+
+   10 declaration: TYPE . TYPELIT @3 nonterminal_names
+
+    TYPELIT  shift, and go to state 24
+
+
+state 13
+
+   11 declaration: START . ID
+
+    ID  shift, and go to state 25
+
+
+state 14
+
+    4 declarations: declarations @1 declaration .
+
+    $default  reduce using rule 4 (declarations)
+
+
+state 15
+
+    8 declaration: precedence . @2 token_names
+
+    $default  reduce using rule 7 (@2)
+
+    @2  go to state 26
+
+
+state 16
+
+   25 rule: ID . ':' rhs action @4 morerules ';'
+
+    ':'  shift, and go to state 27
+
+
+state 17
+
+    1 grammar: declarations BEGIN rules END .
+
+    $default  reduce using rule 1 (grammar)
+
+
+state 18
+
+   23 rules: rules rule .
+
+    $default  reduce using rule 23 (rules)
+
+
+state 19
+
+    5 declaration: PROLOGUE_BEGIN rev_pieces . PROLOGUE_END
+   40 rev_pieces: rev_pieces . piece
+
+    PROLOGUE_END  shift, and go to state 28
+    VAR           shift, and go to state 29
+    CODE          shift, and go to state 30
+    '{'           shift, and go to state 31
+
+    block  go to state 32
+    piece  go to state 33
+
+
+state 20
+
+   14 token_name: ID .
+
+    $default  reduce using rule 14 (token_name)
+
+
+state 21
+
+   15 token_name: TYPELIT .
+
+    $default  reduce using rule 15 (token_name)
+
+
+state 22
+
+    6 declaration: TOKEN token_names .
+   12 token_names: token_names . token_name
+
+    ID       shift, and go to state 20
+    TYPELIT  shift, and go to state 21
+
+    $default  reduce using rule 6 (declaration)
+
+    token_name  go to state 34
+
+
+state 23
+
+   13 token_names: token_name .
+
+    $default  reduce using rule 13 (token_names)
+
+
+state 24
+
+   10 declaration: TYPE TYPELIT . @3 nonterminal_names
+
+    $default  reduce using rule 9 (@3)
+
+    @3  go to state 35
+
+
+state 25
+
+   11 declaration: START ID .
+
+    $default  reduce using rule 11 (declaration)
+
+
+state 26
+
+    8 declaration: precedence @2 . token_names
+
+    ID       shift, and go to state 20
+    TYPELIT  shift, and go to state 21
+
+    token_names  go to state 36
+    token_name   go to state 23
+
+
+state 27
+
+   25 rule: ID ':' . rhs action @4 morerules ';'
+
+    $default  reduce using rule 28 (rhs)
+
+    rhs  go to state 37
+
+
+state 28
+
+    5 declaration: PROLOGUE_BEGIN rev_pieces PROLOGUE_END .
+
+    $default  reduce using rule 5 (declaration)
+
+
+state 29
+
+   43 piece: VAR .
+
+    $default  reduce using rule 43 (piece)
+
+
+state 30
+
+   42 piece: CODE .
+
+    $default  reduce using rule 42 (piece)
+
+
+state 31
+
+   38 block: '{' . rev_pieces '}'
+
+    $default  reduce using rule 39 (rev_pieces)
+
+    rev_pieces  go to state 38
+
+
+state 32
+
+   41 piece: block .
+
+    $default  reduce using rule 41 (piece)
+
+
+state 33
+
+   40 rev_pieces: rev_pieces piece .
+
+    $default  reduce using rule 40 (rev_pieces)
+
+
+state 34
+
+   12 token_names: token_names token_name .
+
+    $default  reduce using rule 12 (token_names)
+
+
+state 35
+
+   10 declaration: TYPE TYPELIT @3 . nonterminal_names
+
+    ID  shift, and go to state 39
+
+    nonterminal_names  go to state 40
+    nonterminal_name   go to state 41
+
+
+state 36
+
+    8 declaration: precedence @2 token_names .
+   12 token_names: token_names . token_name
+
+    ID       shift, and go to state 20
+    TYPELIT  shift, and go to state 21
+
+    $default  reduce using rule 8 (declaration)
+
+    token_name  go to state 34
+
+
+state 37
+
+   25 rule: ID ':' rhs . action @4 morerules ';'
+   29 rhs: rhs . symbol
+   30    | rhs . anon symbol
+
+    CHARLIT  shift, and go to state 42
+    ID       shift, and go to state 43
+    PREC     shift, and go to state 44
+    '{'      shift, and go to state 31
+
+    $default  reduce using rule 37 (action)
+
+    anon    go to state 45
+    symbol  go to state 46
+    action  go to state 47
+    block   go to state 48
+
+
+state 38
+
+   38 block: '{' rev_pieces . '}'
+   40 rev_pieces: rev_pieces . piece
+
+    VAR   shift, and go to state 29
+    CODE  shift, and go to state 30
+    '{'   shift, and go to state 31
+    '}'   shift, and go to state 49
+
+    block  go to state 32
+    piece  go to state 33
+
+
+state 39
+
+   18 nonterminal_name: ID .
+
+    $default  reduce using rule 18 (nonterminal_name)
+
+
+state 40
+
+   10 declaration: TYPE TYPELIT @3 nonterminal_names .
+   16 nonterminal_names: nonterminal_names . nonterminal_name
+
+    ID  shift, and go to state 39
+
+    $default  reduce using rule 10 (declaration)
+
+    nonterminal_name  go to state 50
+
+
+state 41
+
+   17 nonterminal_names: nonterminal_name .
+
+    $default  reduce using rule 17 (nonterminal_names)
+
+
+state 42
+
+   33 symbol: CHARLIT .
+
+    $default  reduce using rule 33 (symbol)
+
+
+state 43
+
+   32 symbol: ID .
+
+    $default  reduce using rule 32 (symbol)
+
+
+state 44
+
+   35 action: PREC . symbol block
+   36       | PREC . symbol
+
+    CHARLIT  shift, and go to state 42
+    ID       shift, and go to state 43
+
+    symbol  go to state 51
+
+
+state 45
+
+   30 rhs: rhs anon . symbol
+
+    CHARLIT  shift, and go to state 42
+    ID       shift, and go to state 43
+
+    symbol  go to state 52
+
+
+state 46
+
+   29 rhs: rhs symbol .
+
+    $default  reduce using rule 29 (rhs)
+
+
+state 47
+
+   25 rule: ID ':' rhs action . @4 morerules ';'
+
+    $default  reduce using rule 24 (@4)
+
+    @4  go to state 53
+
+
+state 48
+
+   31 anon: block .
+   34 action: block .
+
+    ';'       reduce using rule 34 (action)
+    '|'       reduce using rule 34 (action)
+    $default  reduce using rule 31 (anon)
+
+
+state 49
+
+   38 block: '{' rev_pieces '}' .
+
+    $default  reduce using rule 38 (block)
+
+
+state 50
+
+   16 nonterminal_names: nonterminal_names nonterminal_name .
+
+    $default  reduce using rule 16 (nonterminal_names)
+
+
+state 51
+
+   35 action: PREC symbol . block
+   36       | PREC symbol .
+
+    '{'  shift, and go to state 31
+
+    $default  reduce using rule 36 (action)
+
+    block  go to state 54
+
+
+state 52
+
+   30 rhs: rhs anon symbol .
+
+    $default  reduce using rule 30 (rhs)
+
+
+state 53
+
+   25 rule: ID ':' rhs action @4 . morerules ';'
+
+    $default  reduce using rule 26 (morerules)
+
+    morerules  go to state 55
+
+
+state 54
+
+   35 action: PREC symbol block .
+
+    $default  reduce using rule 35 (action)
+
+
+state 55
+
+   25 rule: ID ':' rhs action @4 morerules . ';'
+   27 morerules: morerules . '|' rhs action
+
+    ';'  shift, and go to state 56
+    '|'  shift, and go to state 57
+
+
+state 56
+
+   25 rule: ID ':' rhs action @4 morerules ';' .
+
+    $default  reduce using rule 25 (rule)
+
+
+state 57
+
+   27 morerules: morerules '|' . rhs action
+
+    $default  reduce using rule 28 (rhs)
+
+    rhs  go to state 58
+
+
+state 58
+
+   27 morerules: morerules '|' rhs . action
+   29 rhs: rhs . symbol
+   30    | rhs . anon symbol
+
+    CHARLIT  shift, and go to state 42
+    ID       shift, and go to state 43
+    PREC     shift, and go to state 44
+    '{'      shift, and go to state 31
+
+    $default  reduce using rule 37 (action)
+
+    anon    go to state 45
+    symbol  go to state 46
+    action  go to state 59
+    block   go to state 48
+
+
+state 59
+
+   27 morerules: morerules '|' rhs action .
+
+    $default  reduce using rule 27 (morerules)
