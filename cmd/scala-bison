@@ -1,0 +1,6 @@
+#!/bin/sh
+SCALA_HOME=/afs/cs.uwm.edu/package/scala/current/common
+SCALA_BISON_HOME=/afs/cs.uwm.edu/project/cool/scala-bison
+# bison MUST be version 1.875 or later
+bison -v $1.y
+java -cp $SCALA_HOME/lib/scala-library.jar:$SCALA_BISON_HOME/scala-bison.jar edu.uwm.cs.cool.meta.parser.RunGenerator -v $1.y
