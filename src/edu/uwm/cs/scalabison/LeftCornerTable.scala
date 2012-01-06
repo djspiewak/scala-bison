@@ -16,16 +16,6 @@
 
 package edu.uwm.cs.scalabison;
 
-import edu.uwm.cs.cool.meta.parser.Array;
-import edu.uwm.cs.cool.meta.parser.First;
-import edu.uwm.cs.cool.meta.parser.Follow;
-import edu.uwm.cs.cool.meta.parser.Grammar;
-import edu.uwm.cs.cool.meta.parser.GrammarSpecificationError;
-import edu.uwm.cs.cool.meta.parser.Item;
-import edu.uwm.cs.cool.meta.parser.LeftCornerFollow;
-import edu.uwm.cs.cool.meta.parser.LeftCornerState;
-import edu.uwm.cs.cool.meta.parser.Nonterminal;
-import edu.uwm.cs.cool.meta.parser.Table;
 import scala.collection.Set;
 import scala.collection.mutable.{HashMap,HashSet,ArrayBuffer};
 import scala.io.Source;
@@ -118,12 +108,12 @@ class LeftCornerTable(val table : Table) {
   }
 }
 
-object leftCornerTable {
+object LeftCornerTable {
   def main(args : Array[String]) = {
     for (s <- args) {
       val scanner : BisonScanner = new BisonScanner(Source.fromFile(s+".y"))
       val parser : BisonParser = new BisonParser();
-      parser.yydebug = 1;
+      parser.yydebug = true;
       parser.reset(s+".y",scanner);
       if (parser.yyparse()) {
         println(parser.result);

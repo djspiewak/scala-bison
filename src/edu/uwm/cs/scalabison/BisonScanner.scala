@@ -360,7 +360,7 @@ class BisonScanner(input : Iterator[Char])
   }
 }
 
-object bisonScanner {
+object BisonScanner {
   def main(args : Array[String]) = {
     for (s <- args) {
       val scanner : BisonScanner = new BisonScanner(Source.fromFile(s))

@@ -14,6 +14,9 @@ class RangeSet(val range : Range) extends Set[Int]
   override def elements = range.elements;
   override def contains(x : Int) = range.contains(x);
   override def size = range.size;
+  override def -(elem : Int) : Set[Int] = throw new UnsupportedOperationException("RangeSet#-");
+  override def +(elem : Int) : Set[Int] = throw new UnsupportedOperationException("RangeSet#+");
+  override def iterator : Iterator[Int] = range.iterator;
 }
 
 object TestRangeSet extends Application {

@@ -3,18 +3,6 @@ package edu.uwm.cs.scalabison;
 
 import scala.io.Source;
 
-object bisonParser {
-  def main(args : Array[String]) = {
-    for (s <- args) {
-      val scanner : BisonScanner = new BisonScanner(Source.fromFile(s))
-      val parser : BisonParser = new BisonParser();
-      parser.reset(s,scanner);
-      if (parser.yyparse()) {
-	println(parser.result);
-      }
-    }
-  }
-}
 %}
 
 %token <Char> CHARLIT
@@ -23,6 +11,8 @@ object bisonParser {
 %token LEFT RIGHT NONASSOC TOKEN TYPE START PREC
 %token <Int> VAR
 %token <String> TYPELIT CODE END
+%token <String> STRINGLIT
+%token UNION
 %type <Symbol> symbol anon
 %type <List[Symbol]> rhs
 %type <Code> block piece 

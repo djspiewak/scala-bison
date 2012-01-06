@@ -1,7 +1,7 @@
 package edu.uwm.cs.scalabison;
 
 object Version {
-  val version : String = "0.794";
+  val version : String = "0.8";
 }
 
 // History:
@@ -13,3 +13,4 @@ object Version {
 // 0.792: Bug introduced in 0.78: need to handle followset too
 // 0.793: Fixed announce conflicts & shadowing for accept actions
 // 0.794: Fixed bug (identifiers could not include digits)
+// 0.8: Updated for Scala 2.9.1, re-bootstrapped

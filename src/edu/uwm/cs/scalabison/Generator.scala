@@ -16,30 +16,14 @@
 
 package edu.uwm.cs.scalabison;
 
-import scala.io.Source;
-import java.io._;
-
-import edu.uwm.cs.cool.meta.parser.ArtificialNonterminal;
-import edu.uwm.cs.cool.meta.parser.BisonTable;
-import edu.uwm.cs.cool.meta.parser.ErrorNonterminal;
-import edu.uwm.cs.cool.meta.parser.HashMap;
-import edu.uwm.cs.cool.meta.parser.Item;
-import edu.uwm.cs.cool.meta.parser.LeftCornerState;
-import edu.uwm.cs.cool.meta.parser.LeftCornerTable;
-import edu.uwm.cs.cool.meta.parser.Map;
-import edu.uwm.cs.cool.meta.parser.Nonterminal;
-import edu.uwm.cs.cool.meta.parser.Options;
-import edu.uwm.cs.cool.meta.parser.Rule;
-import edu.uwm.cs.cool.meta.parser.State;
-import edu.uwm.cs.cool.meta.parser.Symbol;
-import edu.uwm.cs.cool.meta.parser.nextlongest;
-import edu.uwm.cs.cool.meta.parser.scala;
-import scala.collection.Set;
-import scala.collection.immutable.ListSet;
+import scala.io.Source
+import java.io._
+import scala.collection.Set
+import scala.collection.immutable.ListSet
 import scala.collection.mutable._;
 
 /** Generate recursive-ascent-descent parser for the given tables. 
- * This technique is inspired by Nogel Horspool's paper
+ * This technique is inspired by Nigel Horspool's paper
  * on the same topic with a number of sloppy shortcuts.
  * Any errors are strictly my own (John Boyland).
  */
@@ -104,9 +88,9 @@ class Generator(prefix : String, table : BisonTable)
     pw.println("  private def yynext() = {");
     pw.println("    yycur = {");
     pw.println("      if (yyinput hasNext) {");
-    pw.println("	yyinput.next");
+    pw.println("        yyinput.next");
     pw.println("      } else {");
-    pw.println("	"+prefix+"Tokens.YYEOF();");
+    pw.println("        "+prefix+"Tokens.YYEOF();");
     pw.println("      }");
     pw.println("    }");
     if (Options.debug)
@@ -134,7 +118,7 @@ class Generator(prefix : String, table : BisonTable)
     pw.println("      parse_YYEOF()");
     pw.println("      true");
     pw.println("    } catch {");
-     pw.println("      case YYError(s) => yyerror(s); false");
+    pw.println("      case YYError(s) => yyerror(s); false");
     pw.println("    }");
     pw.println("  }");
     pw.println("");
@@ -153,7 +137,7 @@ class Generator(prefix : String, table : BisonTable)
     //pw.println("    }");
     pw.println("  }");
     pw.println("");
-    */
+     */
     pw.println("  def parse_YYCHAR(yy:Char) : Unit = {");
     pw.println("    yycur match {");
     pw.println("      case " + prefix +"Tokens.YYCHAR(`yy`) => yynext; ()");
@@ -165,21 +149,21 @@ class Generator(prefix : String, table : BisonTable)
     pw.println();
     for (sym <- table.grammar.all_symbols) {
       sym match {
-	case _:CharLitTerminal => ()
-	case t:Terminal => {
-	  pw.println("  def parse_" + t.name + "() : " + t.getType() + " = {")
-	  pw.println("    yycur match {");
-	  pw.print("      case " + prefix + "Tokens." + t.name);
-	  if (t.typed) {
-	    pw.println("(yy) => yynext; yy");
-	  } else {
-	    pw.println("() => yynext; ()");
-	  }
-	  pw.println("      case _ => throw new YYError(\"Expected '" + t.name + "'\");");
-	  pw.println("    }");
-	  pw.println("  }\n");
-	}
-	case _ => ()
+      case _:CharLitTerminal => ()
+      case t:Terminal => {
+        pw.println("  def parse_" + t.name + "() : " + t.getType() + " = {")
+        pw.println("    yycur match {");
+        pw.print("      case " + prefix + "Tokens." + t.name);
+        if (t.typed) {
+          pw.println("(yy) => yynext; yy");
+        } else {
+          pw.println("() => yynext; ()");
+        }
+        pw.println("      case _ => throw new YYError(\"Expected '" + t.name + "'\");");
+        pw.println("    }");
+        pw.println("  }\n");
+      }
+      case _ => ()
       }
     }
 
@@ -188,7 +172,7 @@ class Generator(prefix : String, table : BisonTable)
       pw.print(" : " + nt.getType)
       pw.println(" = {");
       if (Options.debug)
-	pw.println("    if (yydebug) println(\"Parsing "+nt.name+"\");");
+        pw.println("    if (yydebug) println(\"Parsing "+nt.name+"\");");
       /* YYGoto:
       pw.println("    yystate" + state.number + "() match {");
       pw.println("      case YYBase(YYNT" + (code(nt)) + "(yy)) => yy");
@@ -196,18 +180,18 @@ class Generator(prefix : String, table : BisonTable)
       if (Options.debug)
 	pw.println("      case _ => throw new YYError(\"internal parser error\")");
       pw.println("    }");
-      */
+       */
       if (Options.debug) {
-	pw.println("    if (yystate" + state.number + "() != 0)");
-	pw.println("      throw new YYError(\"internal parse error\");");
+        pw.println("    if (yystate" + state.number + "() != 0)");
+        pw.println("      throw new YYError(\"internal parse error\");");
       } else {
-	pw.println("    yystate" + state.number + "();");
+        pw.println("    yystate" + state.number + "();");
       }
       pw.println("    yynt match {");
       pw.println("      case YYNT" + (code(nt)) + "(yy) => yy");
       pw.println("      case YYNTerror(s) => throw new YYError(s)");
       if (Options.debug)
-	pw.println("      case _ => throw new YYError(\"internal parser error\")");
+        pw.println("      case _ => throw new YYError(\"internal parser error\")");
       pw.println("    }");
       /* end removal of YYGoto */
       pw.println("  }\n");
@@ -232,15 +216,15 @@ class Generator(prefix : String, table : BisonTable)
     pw.println("  }");
     for (symbol <- table.grammar.all_symbols) {
       symbol match {
-	case _:CharLitTerminal => ()
-	case t:Terminal => {
-	  pw.print("  case class " + t.name + "(");
-	  if (t.typed) {
-	    pw.print("yy: " + t.getType())
-	  }
-	  pw.println(") extends YYToken;");
-	}
-	case _ => ()
+      case _:CharLitTerminal => ()
+      case t:Terminal => {
+        pw.print("  case class " + t.name + "(");
+        if (t.typed) {
+          pw.print("yy: " + t.getType())
+        }
+        pw.println(") extends YYToken;");
+      }
+      case _ => ()
       }
     }
   }
@@ -250,13 +234,13 @@ class Generator(prefix : String, table : BisonTable)
     pw.println("  case class YYNTerror(yy : String) extends YYNonterminal;");
     for (symbol <- table.grammar.all_symbols) {
       symbol match {
-	case _:ArtificialNonterminal => ()
-	case nt:Nonterminal => {
-	  pw.print("  case class YYNT" + code(nt) + "(");
-	  pw.print("yy: " + nt.getType())
-	  pw.println(") extends YYNonterminal;");
-	}
-	case _ => ()
+      case _:ArtificialNonterminal => ()
+      case nt:Nonterminal => {
+        pw.print("  case class YYNT" + code(nt) + "(");
+        pw.print("yy: " + nt.getType())
+        pw.println(") extends YYNonterminal;");
+      }
+      case _ => ()
       }
     }
   }
@@ -264,70 +248,70 @@ class Generator(prefix : String, table : BisonTable)
   private val usedAfterRecognition : Map[Symbol,Item] = new HashMap();
 
   private def writeRule(pw: PrintWriter, rule : Rule) : Unit = {
-    if (rule.lhs.isInstanceOf[ArtificialNonterminal]) return;
-    // write the rescurive descent part after the recognition point
-    pw.println();
-    pw.println("  /** Recursive descent parser after recognition point");
-    pw.println("   * " + new Item(rule,rule.recognitionPoint))
-    pw.println("   */");
-    pw.print("  private def yyrule" + rule.number + "(");
-    var noargs : Boolean = true;
-    var i : Int = 0;
-    var recognized : Boolean = false;
-    for (symbol <- rule.rhs) {
-      if (i == rule.recognitionPoint) {
-	finishRuleHeader(pw,rule);
-	recognized = true;
+      if (rule.lhs.isInstanceOf[ArtificialNonterminal]) return;
+      // write the rescurive descent part after the recognition point
+      pw.println();
+      pw.println("  /** Recursive descent parser after recognition point");
+      pw.println("   * " + new Item(rule,rule.recognitionPoint))
+      pw.println("   */");
+      pw.print("  private def yyrule" + rule.number + "(");
+      var noargs : Boolean = true;
+      var i : Int = 0;
+      var recognized : Boolean = false;
+      for (symbol <- rule.rhs) {
+        if (i == rule.recognitionPoint) {
+          finishRuleHeader(pw,rule);
+          recognized = true;
+        }
+        i += 1;
+        if (recognized) {
+          pw.print("    ");
+          symbol match {
+          case CharLitTerminal(ch) => {
+            pw.println("parse_YYCHAR('"+ toLit(ch) +"');");
+          }
+          case nt:ArtificialNonterminal => {
+            if (nt.name.charAt(0) == '@') {
+              pw.println(nt.rules(0).action);
+            } else {
+              error("Unknown artificial nonterminal " + nt);
+            }
+          }
+          case _ => {
+            usedAfterRecognition.put(symbol,new Item(rule,i-1));
+            if (symbol.typed) {
+              pw.print("val yyarg" + i + " : " + symbol.getType() + " = ");
+            }
+            pw.println("parse_" + code(symbol) + "();");
+          }
+          }
+        } else {
+          // not yet recognized
+          if (symbol.typed) {
+            if (noargs) {
+              noargs = false;
+            } else {
+              pw.print(", ");
+            }
+            pw.print("yyarg" + i + " : " + symbol.getType());
+          }
+        }
       }
-      i += 1;
-      if (recognized) {
-	pw.print("    ");
-	symbol match {
-	  case CharLitTerminal(ch) => {
-	    pw.println("parse_YYCHAR('"+ toLit(ch) +"');");
-	  }
-	  case nt:ArtificialNonterminal => {
-	    if (nt.name.charAt(0) == '@') {
-	      pw.println(nt.rules(0).action);
-	    } else {
-	      error("Unknown artificial nonterminal " + nt);
-	    }
-	  }
-	  case _ => {
-	    usedAfterRecognition.put(symbol,new Item(rule,i-1));
-	    if (symbol.typed) {
-	      pw.print("val yyarg" + i + " : " + symbol.getType() + " = ");
-	    }
-	    pw.println("parse_" + code(symbol) + "();");
-	  }
-	}
-      } else {
-	// not yet recognized
-	if (symbol.typed) {
-	  if (noargs) {
-	    noargs = false;
-	  } else {
-	    pw.print(", ");
-	  }
-	  pw.print("yyarg" + i + " : " + symbol.getType());
-	}
-      }
-    }
-    if (!recognized) finishRuleHeader(pw,rule);
-    rule.action match {
+      if (!recognized) finishRuleHeader(pw,rule);
+      rule.action match {
       case NoCode() => {
-	if (rule.lhs.typed) {
-	  pw.println("    yyresult = yyarg1;");
-	}
+        if (rule.lhs.typed) {
+          pw.println("    yyresult = yyarg1;");
+        }
       }
       case _ => {
-	pw.println("    " + rule.action);
+        pw.println("    " + rule.action);
       }
-    }
-    if (rule.lhs.typed) {
-      pw.println("    yyresult");
-    }
-    pw.println("  }");
+      }
+      if (rule.lhs.typed) {
+        pw.println("    yyresult");
+      }
+      pw.println("  }");
   }
 
   private def finishRuleHeader(pw : PrintWriter, rule : Rule) = {
@@ -335,7 +319,7 @@ class Generator(prefix : String, table : BisonTable)
     if (rule.lhs.typed) {
       pw.println(": " + rule.lhs.getType() + " = {");
       pw.println("    var yyresult : " + rule.lhs.getType() + 
-		 " = " + defaultInitial(rule.lhs.getType()) + ";");
+          " = " + defaultInitial(rule.lhs.getType()) + ";");
     } else {
       pw.println(": Unit = {");
     }
@@ -345,8 +329,8 @@ class Generator(prefix : String, table : BisonTable)
 
   private def defaultInitial(t : String) : String = {
     t match {
-      case "Boolean" => "false";
-      case "Int" => "0";
+    case "Boolean" => "false";
+    case "Int" => "0";
       case _ => "null";
     }
   }
@@ -361,135 +345,135 @@ class Generator(prefix : String, table : BisonTable)
   private val stateWritten : HashSet[Int] = new HashSet;
 
   private def writeState(pw : PrintWriter, state : LeftCornerState) : Unit = {
-    if (stateWritten contains (state.number)) return;
-    stateWritten += state.number;
-    // println("Writing state " + state.number);
+      if (stateWritten contains (state.number)) return;
+      stateWritten += state.number;
+      // println("Writing state " + state.number);
 
-    // we cache everything into a string builder first,
-    // to avoid intermixing states
-    val sb : StringBuilder = new StringBuilder();
+      // we cache everything into a string builder first,
+      // to avoid intermixing states
+      val sb : StringBuilder = new StringBuilder();
 
-    // the "longest" item
-    val longest : Item = state.longestItem;
-    var nextIndex : Int = 1;
-    if (longest != null) nextIndex = longest.index+1;
-    val nextarg : String = "yyarg" + nextIndex;
+      // the "longest" item
+      val longest : Item = state.longestItem;
+      var nextIndex : Int = 1;
+      if (longest != null) nextIndex = longest.index+1;
+      val nextarg : String = "yyarg" + nextIndex;
 
-    sb.append("\n  private def yystate" + state.number + "(");
-    var noargs : Boolean = true;
-    var i : Int = 0;
-    if (longest != null) {
-      for (symbol <- (longest.rule.rhs.slice(0,longest.index))) {
-	i += 1;
-	if (symbol.typed) {
-	  if (noargs) {
-	    noargs = false;
-	  } else {
-	    sb.append(", ");
-	  }
-	  sb.append("yyarg" + i + ": " + symbol.getType());
-	}
+      sb.append("\n  private def yystate" + state.number + "(");
+      var noargs : Boolean = true;
+      var i : Int = 0;
+      if (longest != null) {
+        for (symbol <- (longest.rule.rhs.slice(0,longest.index))) {
+          i += 1;
+          if (symbol.typed) {
+            if (noargs) {
+              noargs = false;
+            } else {
+              sb.append(", ");
+            }
+            sb.append("yyarg" + i + ": " + symbol.getType());
+          }
+        }
+      } else if (state.nonterminal != null && !state.atStart) {
+        // for fake item:
+        if (state.nonterminal.typed) {
+          sb.append("yyarg1: " + state.nonterminal.getType())
+        }
       }
-    } else if (state.nonterminal != null && !state.atStart) {
-      // for fake item:
-      if (state.nonterminal.typed) {
-	sb.append("yyarg1: " + state.nonterminal.getType())
-      }
-    }
-    /*YYGoto
+      /*YYGoto
     sb.append(") : YYGoto = {\n")
-    */
-    sb.append(") : Int = {\n") // No YYGoto
-    if (Options.debug)
-      sb append "    if (yydebug) println(\"Entering state "+ state.number+"\")\n";
-    /* YYGoto
+       */
+      sb.append(") : Int = {\n") // No YYGoto
+      if (Options.debug)
+        sb append "    if (yydebug) println(\"Entering state "+ state.number+"\")\n";
+      /* YYGoto
     sb append "    var yygoto : YYGoto = null;\n";
-    */
-    sb append "    var yygoto : Int = 0;\n"; // No YYGoto
-    
-    if (state.gotos contains (ErrorNonterminal())) {
-      sb append "    try {\n";
-    }
+       */
+      sb append "    var yygoto : Int = 0;\n"; // No YYGoto
 
-    sb append "    yycur match {\n";
-    for ((t,action) <- state.actions) {
-      sb append "      case ";
-      sb append prefix
-      sb append "Tokens."
-      t match {
-	case CharLitTerminal(ch) => {
-	  sb append "YYCHAR('" + toLit(ch) + "')";
-	}
-	case _ => {
-	  sb append (t.name);
-	  sb append '(';
-	  if (t.typed) {
-	    action match {
-	      case ShiftAction(_) => sb append nextarg 
-	      case _ => sb append "_"
-	    }
-	  }
-	  sb append ')'
-	}
+      if (state.gotos contains (ErrorNonterminal())) {
+        sb append "    try {\n";
       }
-      sb append " => ";
-      action match {
-	case AnnounceAction(r) => {
-	  appendRuleCall(sb,longest,r);
-	}
-	case AcceptNTAction(nt) => {
-	  appendAcceptNT(sb,nt);
-	}
-	case ShiftAction(s) => {
-	  sb append "yynext; ";
-	  writeState(pw,s.asInstanceOf[LeftCornerState]);
-	  appendGoto(sb,longest,s);
-	}
-	case ErrorAction(s) => {
-	  /* YYGoto
+
+      sb append "    yycur match {\n";
+      for ((t,action) <- state.actions) {
+        sb append "      case ";
+        sb append prefix
+        sb append "Tokens."
+        t match {
+        case CharLitTerminal(ch) => {
+          sb append "YYCHAR('" + toLit(ch) + "')";
+        }
+        case _ => {
+          sb append (t.name);
+          sb append '(';
+          if (t.typed) {
+            action match {
+            case ShiftAction(_) => sb append nextarg 
+            case _ => sb append "_"
+            }
+          }
+          sb append ')'
+        }
+        }
+        sb append " => ";
+        action match {
+        case AnnounceAction(r) => {
+          appendRuleCall(sb,longest,r);
+        }
+        case AcceptNTAction(nt) => {
+          appendAcceptNT(sb,nt);
+        }
+        case ShiftAction(s) => {
+          sb append "yynext; ";
+          writeState(pw,s.asInstanceOf[LeftCornerState]);
+          appendGoto(sb,longest,s);
+        }
+        case ErrorAction(s) => {
+          /* YYGoto
 	  sb append "yygoto = YYBase(YYNTerror(\"";
 	  sb append s
 	  sb append "\"));\n"
-	  */
-	  sb append "yynt = YYNTerror(\"";
-	  sb append s
-	  sb append "\");\n"
-	}
+           */
+          sb append "yynt = YYNTerror(\"";
+          sb append s
+          sb append "\");\n"
+        }
+        }
       }
-    }
-    sb append "      case _ => "
-    state.default match {
+      sb append "      case _ => "
+      state.default match {
       case null =>
-	/* YYGoto
-	sb append "yygoto = YYBase(YYNTerror(\"syntax error\"));\n";
-        */
-	sb append "yynt = YYNTerror(\"syntax error\");\n";
-      case AnnounceAction(r) =>
-	appendRuleCall(sb,longest,r)
-      case AcceptNTAction(nt) =>
-	appendAcceptNT(sb,nt);
-      case AcceptAction() =>
-	appendRuleCall(sb,longest,table.grammar.rules(0));
-    }
-    sb append "    }\n";
-
-    if (state.gotos contains ErrorNonterminal()) {
-      sb append "    } catch {\n";
       /* YYGoto
-      sb append "      case YYError(s) => yygoto = YYBase(YYNTerror(s));\n";
-      */
-      sb append "      case YYError(s) => yynt = YYNTerror(s);\n";
+	sb append "yygoto = YYBase(YYNTerror(\"syntax error\"));\n";
+       */
+      sb append "yynt = YYNTerror(\"syntax error\");\n";
+      case AnnounceAction(r) =>
+      appendRuleCall(sb,longest,r)
+      case AcceptNTAction(nt) =>
+      appendAcceptNT(sb,nt);
+      case AcceptAction() =>
+      appendRuleCall(sb,longest,table.grammar.rules(0));
+      }
       sb append "    }\n";
-    }
 
-    /* YYGoto:
+      if (state.gotos contains ErrorNonterminal()) {
+        sb append "    } catch {\n";
+        /* YYGoto
+      sb append "      case YYError(s) => yygoto = YYBase(YYNTerror(s));\n";
+         */
+        sb append "      case YYError(s) => yynt = YYNTerror(s);\n";
+        sb append "    }\n";
+      }
+
+      /* YYGoto:
     sb append "    while (true) {\n";
     sb append "      yygoto match {\n";
     sb append "        case YYNested(g) => return g;\n";
-    */
-    sb append "    while (yygoto == 0) {\n";
-    if (state.gotos contains (ErrorNonterminal())) {
-      sb append "      try {\n";
+       */
+      sb append "    while (yygoto == 0) {\n";
+      if (state.gotos contains (ErrorNonterminal())) {
+        sb append "      try {\n";
     }
 
     sb append "      yynt match {\n";
@@ -684,7 +668,7 @@ object RunGenerator {
       } else {
         try {
           val scanner : BisonScanner = new BisonScanner(Source.fromFile(s))
-        val parser : BisonParser = new BisonParser();
+          val parser : BisonParser = new BisonParser();
           val sep : Int = s.lastIndexOf(File.separatorChar);
           val filename = if (sep < 0) s; else s.substring(sep+1);
           val dot : Int = filename.lastIndexOf('.');
@@ -692,15 +676,15 @@ object RunGenerator {
             if (dot < 0) filename; else filename.substring(0,dot);
           parser.reset(s,scanner);
           if (Options.meta_debug) {
-            parser.yydebug = 1;
+            parser.yydebug = true;
           }
           if (parser.yyparse()) {
             // println(parser.result);
             val table : BisonTable = new BisonTable(parser.result);
-          table.fromFile(prefix+".output");
-          // println(table);
-          val gen : Generator = new Generator(prefix,table);
-          gen.writeFiles();
+            table.fromFile(prefix+".output");
+            // println(table);
+            val gen : Generator = new Generator(prefix,table);
+            gen.writeFiles();
           }
         } catch {
         case e:java.io.IOException => {

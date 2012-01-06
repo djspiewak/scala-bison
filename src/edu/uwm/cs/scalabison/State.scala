@@ -16,16 +16,15 @@
 
 package edu.uwm.cs.scalabison;
 
-import scala.collection.mutable.Map;
-import scala.collection.Set;
-import scala.collection.immutable.ListSet;
-import scala.collection.mutable.HashMap;
-import scala.collection.mutable.HashSet;
-import scala.collection.mutable.ArrayBuffer;
+import scala.collection.mutable.Map
+import scala.collection.Set
+import scala.collection.immutable.ListSet
+import scala.collection.mutable.HashMap
+import scala.collection.mutable.HashSet
+import scala.collection.mutable.ArrayBuffer
+import edu.uwm.cs.util.Dominator
+import edu.uwm.cs.util.Reach
 
-import edu.uwm.cs.cool.util.Dominator;
-import edu.uwm.cs.cool.util.Reach;
-import edu.uwm.cs.cool.util.RangeSet;
 
 class State(val number : Int, val core : Set[Item]) {
   // Scala 2.7 dosn't permit super.x any more for some unspecified reason,
