@@ -1,7 +1,7 @@
 package edu.uwm.cs.scalabison;
 
 object Version {
-  val version : String = "0.8";
+  val version : String = "0.81";
 }
 
 // History:
@@ -14,3 +14,4 @@ object Version {
 // 0.793: Fixed announce conflicts & shadowing for accept actions
 // 0.794: Fixed bug (identifiers could not include digits)
 // 0.8: Updated for Scala 2.9.1, re-bootstrapped
+// 0.81: No longer generates "Unit" values for untyped nonterminals (caused warnings)

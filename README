@@ -19,13 +19,19 @@ Please see LICENSE for software licensing.
 	make compile
 	make
   This will create your own scala-bison.jar file (deleting the old one
-  in the process).
+  in the process).  Then you should repeat the bootstrapping process:
+	make boot
+	make compile
+	make
+  Now you have a scala-bison generated and compiled by itself.
+
 
 (2) Installation
 
   There is no automatic installation.  You may find the script
 	cmd/scala-bison
   useful.
+
 
 (3) Using ScalaBison
 

@@ -188,7 +188,11 @@ class Generator(prefix : String, table : BisonTable)
         pw.println("    yystate" + state.number + "();");
       }
       pw.println("    yynt match {");
-      pw.println("      case YYNT" + (code(nt)) + "(yy) => yy");
+      if (nt.typed) {
+        pw.println("      case YYNT" + (code(nt)) + "(yy) => yy");
+      } else {
+        pw.println("      case YYNT" + (code(nt)) + "() => ()");
+      }
       pw.println("      case YYNTerror(s) => throw new YYError(s)");
       if (Options.debug)
         pw.println("      case _ => throw new YYError(\"internal parser error\")");
@@ -237,7 +241,9 @@ class Generator(prefix : String, table : BisonTable)
       case _:ArtificialNonterminal => ()
       case nt:Nonterminal => {
         pw.print("  case class YYNT" + code(nt) + "(");
-        pw.print("yy: " + nt.getType())
+        if (nt.typed) {
+          pw.print("yy: " + nt.getType())
+        }
         pw.println(") extends YYNonterminal;");
       }
       case _ => ()
@@ -526,7 +532,9 @@ class Generator(prefix : String, table : BisonTable)
 	sb append ")) => ";
 	*/
 	sb append ("        case YYNT" + code(nt) + "(");
-	sb append nextarg;
+	if (nt.typed) {
+	  sb append nextarg;
+	}
 	sb append ") => ";
       }
       appendGoto(sb,longest,next);
@@ -577,8 +585,9 @@ class Generator(prefix : String, table : BisonTable)
      sb append "))));\n";
      */
     sb append "yynt = YYNT"+code(nt)+"(";
-    if (nt.typed) sb.append("yyarg1");
-    else sb.append("()");
+    if (nt.typed) {
+      sb.append("yyarg1");
+    }
     sb append "); yygoto = 2;\n"
   }
 
@@ -589,14 +598,24 @@ class Generator(prefix : String, table : BisonTable)
     val rp = rule getRecognitionPoint;
     var li : Int = 0;
     if (longest != null) li = longest.index;
-    sb append "yynt = " // No YYGoto
-    sb append "YYNT"
-    sb append code(rule.lhs)			      
-    sb append "(yyrule";
-    sb append rule.number;
-    sb append "(";
-    appendActuals(sb,li-rp,rule.rhs.slice(0,rp))
-    sb append ")); ";
+    if (rule.lhs.typed) {
+      sb append "yynt = " // No YYGoto
+      sb append "YYNT"
+      sb append code(rule.lhs)			      
+      sb append "(yyrule";
+      sb append rule.number;
+      sb append "(";
+      appendActuals(sb,li-rp,rule.rhs.slice(0,rp))
+      sb append ")); ";
+    } else {
+      sb append "yyrule";
+      sb append rule.number;
+      sb append "(";
+      appendActuals(sb,li-rp,rule.rhs.slice(0,rp))
+      sb append "); yynt = YYNT";
+      sb append code(rule.lhs);
+      sb append "(); ";
+    }
     sb append "yygoto = " 
     sb append rp;
     sb append "\n";
