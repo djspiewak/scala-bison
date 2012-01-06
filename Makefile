@@ -1,15 +1,21 @@
 scala-bison.jar :
-	if [ -f bin/edu/uwm/cs/scalabison/BisonParser.class ]; \
+	@if [ -f bin/edu/uwm/cs/scalabison/BisonParser.class ]; \
 	then \
+	  echo jar cf scala-bison.jar -C bin edu; \
 	  jar cf scala-bison.jar -C bin edu; \
+	elif [ -f src/edu/uwm/cs/scalabison/BisonParser.scala ]; \
+	then \
+	  make compile && make scala-bison.jar; \
 	else \
 	  echo "Need to fetch scala-bison.jar from the distribution site, e.g. "; \
+	  echo "https://github.com/downloads/djspiewak/scala-bison/scala-bison.jar"; \
 	fi
 
 .PHONY: compile
 compile:
+	mkdir -p bin
 	(cd src; scalac -d ../bin edu/uwm/cs/util/*.scala edu/uwm/cs/scalabison/*.scala)
-	rm scala-bison.jar
+	rm -f scala-bison.jar
 
 PDIR = src/edu/uwm/cs/scalabison/
 

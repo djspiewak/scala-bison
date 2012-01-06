@@ -1,0 +1,46 @@
+ScalaBison -- Generate LAXLC(1) parsers in Scala from bison input and output files.
+
+Release Notes
+Version 0.8, January 2012
+
+Please see LICENSE for software licensing.
+
+(1) Compiling ScalaBison
+
+  ScalaBison is bootstrapped through itself.  Thus you need
+  scalabison.jar before you can build ScalaBison, and thus create
+  the JAR file.
+
+  You can download scala-bison.jar from github:
+	https://github.com/downloads/djspiewak/scala-bison/scala-bison.jar
+
+  Then using "make"
+	make boot
+	make compile
+	make
+  This will create your own scala-bison.jar file (deleting the old one
+  in the process).
+
+(2) Installation
+
+  There is no automatic installation.  You may find the script
+	cmd/scala-bison
+  useful.
+
+(3) Using ScalaBison
+
+  In lieu of documentation: here's the basic way to use ScalaBison
+
+  (a) Create a bison-style xxx.y file.  
+      Unlike bison, ScalaBison requires every grammar production
+      to end with a semicolon.  (Semicolons are optional in bison).
+
+  (b) Run bison, as in:
+	bison -v xxx.y
+      Discard/ignore the xxx.tab.x file.
+
+  (c) Run ScalaBison, using:
+	scala -cp scala-bison.jar -howtorun:object edu.uwm.cs.scalabison.RunGenerator [-t] [-v] xxx.y
+      The result is in xxx.scala
+
+  
