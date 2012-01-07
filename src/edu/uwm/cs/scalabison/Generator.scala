@@ -22,6 +22,8 @@ import scala.collection.Set
 import scala.collection.immutable.ListSet
 import scala.collection.mutable._;
 
+import edu.uwm.cs.util.CharUtil;
+
 /** Generate recursive-ascent-descent parser for the given tables. 
  * This technique is inspired by Nigel Horspool's paper
  * on the same topic with a number of sloppy shortcuts.
@@ -274,7 +276,7 @@ class Generator(prefix : String, table : BisonTable)
           pw.print("    ");
           symbol match {
           case CharLitTerminal(ch) => {
-            pw.println("parse_YYCHAR('"+ toLit(ch) +"');");
+            pw.println("parse_YYCHAR("+ toLit(ch) +");");
           }
           case nt:ArtificialNonterminal => {
             if (nt.name.charAt(0) == '@') {
@@ -337,14 +339,16 @@ class Generator(prefix : String, table : BisonTable)
     t match {
     case "Boolean" => "false";
     case "Int" => "0";
-      case _ => "null";
+    case "Double" => "0";
+    case "Float" => "0";
+    case "Char" => "0";
+    case "Byte" => "0";
+    case "Short" => "0";
+    case _ => "null";
     }
   }
 
-  private def toLit(ch : Char) : String = {
-    if (ch == '\'') "\\'";
-    else ch + ""
-  }
+  private def toLit(ch : Char) : String = CharUtil.lit(ch);
 
   private def code(s : Symbol) : String = s.name;
 
@@ -408,7 +412,7 @@ class Generator(prefix : String, table : BisonTable)
         sb append "Tokens."
         t match {
         case CharLitTerminal(ch) => {
-          sb append "YYCHAR('" + toLit(ch) + "')";
+          sb append "YYCHAR(" + toLit(ch) + ")";
         }
         case _ => {
           sb append (t.name);
@@ -509,9 +513,9 @@ class Generator(prefix : String, table : BisonTable)
 	  sb append "Tokens.";
 	  t match {
 	    case CharLitTerminal(ch) => {
-	      sb append "YYCHAR('"
+	      sb append "YYCHAR("
 	      sb append toLit(ch)
-	      sb append "')"
+	      sb append ")"
 	    }
 	    case _ => {
 	      sb append (t.name)

@@ -15,6 +15,7 @@
  */
 
 package edu.uwm.cs.scalabison;
+import edu.uwm.cs.util.CharUtil;
 
-case class CharLitTerminal(c : Char) extends Terminal("'"+c+"'","") {
+case class CharLitTerminal(c : Char) extends Terminal(CharUtil.lit(c),"") {
 }

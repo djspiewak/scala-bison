@@ -20,6 +20,8 @@ import scala.collection.mutable.Map;
 import scala.collection.mutable.ArrayBuffer;
 import scala.collection.mutable.HashMap;
 
+import edu.uwm.cs.util.CharUtil;
+
 class BisonGrammar() extends Grammar {
   val special : Nonterminal = add(new ArtificialNonterminal("$accept",""));
   val error : Nonterminal = add(new ErrorNonterminal);
@@ -57,7 +59,7 @@ class BisonGrammar() extends Grammar {
   }
 
   def getCLT(ch : Char) : Terminal = {
-    val name : String = "'" + ch + "'";
+    val name : String = CharUtil.lit(ch);
     find(name) match {
       case Some(t:Terminal) => t
       case None => add(new CharLitTerminal(ch));
