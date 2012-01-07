@@ -1,0 +1,16 @@
+Example Uses of ScalaBison
+
+This directory has two examples using ScalaBison.
+The main source includes also a parser for Bison grammars.
+
+The "Calc" grammar takes an example from the bison manual together with
+a scanner implemented using the "--scala" option of JFlex.
+The "Calc" object can be used to execute the parser and scanner on standard input.
+
+The Java grammar is directly from the Java Language Specification.
+It is not set up for execution although it will compile.
+(There is no scanner).
+
+The Makefile in this directory allows one to build the various parsers.
+It also (because it uses the script ../cmd/scala-bison) creates .lcoutput files
+that show the "left corner" parsing tables used.

@@ -1,6 +1,7 @@
 #!/bin/sh
-SCALA_HOME=/afs/cs.uwm.edu/package/scala/current/common
-SCALA_BISON_HOME=/afs/cs.uwm.edu/project/cool/scala-bison
+SCALA_BISON_HOME=`dirname $0`/..
 # bison MUST be version 1.875 or later
 bison -v $1.y
-java -cp $SCALA_HOME/lib/scala-library.jar:$SCALA_BISON_HOME/scala-bison.jar edu.uwm.cs.scalabison.RunGenerator -v $1.y
+rm $1.tab.c
+scala -cp $SCALA_BISON_HOME/scala-bison.jar -howtorun:object edu.uwm.cs.scalabison.RunGenerator -v $1.y
+rm $1.output
