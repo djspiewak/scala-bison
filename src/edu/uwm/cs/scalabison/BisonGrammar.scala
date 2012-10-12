@@ -66,5 +66,10 @@ class BisonGrammar() extends Grammar {
     }
   }
 
+  override def find(name : String) : Option[Symbol] = {
+    val key = if (name.startsWith("$@")) name.substring(1) else name;
+    super.find(key);
+  }
+
 }
 
