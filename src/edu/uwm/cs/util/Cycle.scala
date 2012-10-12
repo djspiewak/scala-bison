@@ -47,7 +47,7 @@ class Cycle(max : Int, val succ : PartialFunction[Int,Set[Int]])
   override def apply(n : Int) = reachable(n) contains n;
 }
 
-object TestCycle extends Application {
+object TestCycle extends App {
   val e : Set[Int] = ListSet.empty;
   val c : Cycle = 
     new Cycle(13, { i => i match {

@@ -47,7 +47,7 @@ class Reach(max : Int, val succ : PartialFunction[Int,Set[Int]])
   override def apply(n : Int) = reachable(n);
 }
 
-object TestReach extends Application {
+object TestReach extends App {
   val e : ListSet[Int] = ListSet.empty;
   val c : Reach = 
     new Reach(13, { i => i match {

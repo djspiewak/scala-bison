@@ -164,7 +164,7 @@ class Dominator(max : Int, val succ : PartialFunction[Int,Set[Int]], root : Int)
   }
 }
 
-object TestDominator extends Application {
+object TestDominator extends App {
   val e : ListSet[Int] = ListSet.empty;
   val d : Dominator = 
     new Dominator(13, { i => i match {

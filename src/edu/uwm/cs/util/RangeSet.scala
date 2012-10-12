@@ -11,7 +11,7 @@ import scala.collection.Set;
  */
 class RangeSet(val range : Range) extends Set[Int]
 {
-  override def elements = range.elements;
+  // override def elements = range.elements;
   override def contains(x : Int) = range.contains(x);
   override def size = range.size;
   override def -(elem : Int) : Set[Int] = throw new UnsupportedOperationException("RangeSet#-");
@@ -19,7 +19,7 @@ class RangeSet(val range : Range) extends Set[Int]
   override def iterator : Iterator[Int] = range.iterator;
 }
 
-object TestRangeSet extends Application {
+object TestRangeSet extends App {
   val x : RangeSet = new RangeSet(1 to 10 by 2);
   println("(1,3,5,7,9) == " + x);
   println("x.size = " + x.size + " (should be 5)");
