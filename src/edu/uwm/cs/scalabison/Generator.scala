@@ -282,7 +282,7 @@ class Generator(prefix : String, table : BisonTable)
             if (nt.name.charAt(0) == '@') {
               pw.println(nt.rules(0).action);
             } else {
-              error("Unknown artificial nonterminal " + nt);
+              sys.error("Unknown artificial nonterminal " + nt);
             }
           }
           case _ => {

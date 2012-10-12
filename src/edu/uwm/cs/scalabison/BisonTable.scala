@@ -90,7 +90,7 @@ class BisonTable(val bison : BisonGrammar) extends Table(bison) {
           case "shift," => {
             val next : Int = Integer.parseInt(pieces(6));
           grammar.find(pieces(0)) match {
-          case Some(nt:ErrorNonterminal) =>
+          case Some(nt:ArtificialNonterminal) =>
           state.putGoto(nt,states(next))
           case Some(t:Terminal) => 
           state.putAction(t,ShiftAction(states(next)));

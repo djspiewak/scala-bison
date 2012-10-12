@@ -16,5 +16,14 @@
 
 package edu.uwm.cs.scalabison;
 
+/*
 case class ErrorNonterminal() extends ArtificialNonterminal("error","") {
+}*/
+
+object ErrorNonterminal {
+  def apply() = ArtificialNonterminal("error","");
+  def unapply(x : Symbol) : Boolean = x match {
+    case ArtificialNonterminal("error","") => true;
+    case _ => false
+  };
 }

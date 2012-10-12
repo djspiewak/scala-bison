@@ -39,9 +39,9 @@ class Rule(val number : Int, val lhs : Nonterminal, val rhs : List[Symbol],
     recognitionPoint = 0; // optimistic
     for (i <- 0 until length) {
       if (precedence != null || // precedence forces using LALR parsing
-	  (nonfree contains new Item(this,i)) || 
-	  (rhs(i).isInstanceOf[ErrorNonterminal])) {
-	recognitionPoint = i+1; // oops! must be later than we hoped!
+          (nonfree contains new Item(this,i)) || 
+          (rhs(i) == ErrorNonterminal())) {
+        recognitionPoint = i+1; // oops! must be later than we hoped!
       }
     }
     // println("Recognition Point is " + new Item(this,recognitionPoint));
