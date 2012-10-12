@@ -87,8 +87,8 @@ morerules
 	;
 
 rhs	: /* EMPTY */ { $$ = Nil; }
-	| rhs symbol { $$ = $1 ++ ($2 :: Nil) }
-	| rhs anon symbol { $$ = $1 ++ ($2 :: $3 :: Nil) } 
+	| rhs symbol { $$ = $1 ++ ($2 :: Nil); }
+	| rhs anon symbol { $$ = $1 ++ ($2 :: $3 :: Nil); } 
 	;
 
 anon	: block
