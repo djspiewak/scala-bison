@@ -1,7 +1,7 @@
 package edu.uwm.cs.scalabison;
 
 object Version {
-  val version : String = "0.82";
+  val version : String = "0.83";
 }
 
 // History:
@@ -16,3 +16,4 @@ object Version {
 // 0.8: Updated for Scala 2.9.1, re-bootstrapped
 // 0.81: No longer generates "Unit" values for untyped nonterminals (caused warnings)
 // 0.82: More support for '\x' terminals, primitive type nonterminals
+// 0.83: added support for bison 2.6.2, re-bootstrapped
