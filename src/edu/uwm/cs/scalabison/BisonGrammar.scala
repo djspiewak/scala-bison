@@ -35,7 +35,7 @@ class BisonGrammar() extends Grammar {
     // Can't get this to work:
     // prologue = (prologue /: x)(+)
     for (c <- x) {
-      prologue += (c toString);
+      prologue += (c.toString);
     }
   }
 
@@ -63,6 +63,7 @@ class BisonGrammar() extends Grammar {
     find(name) match {
       case Some(t:Terminal) => t
       case None => add(new CharLitTerminal(ch));
+      case Some(s:Symbol) => throw new GrammarSpecificationError("Not a terminal: " + name);
     }
   }
 

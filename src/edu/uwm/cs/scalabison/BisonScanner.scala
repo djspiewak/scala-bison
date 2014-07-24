@@ -22,9 +22,9 @@ class BisonScanner(input : Iterator[Char])
       if (!input.hasNext) {
 	throw new GrammarSpecificationError("unexpected EOF");
       }
-      current = (input next) toInt
+      current = (input.next).toInt
     }
-    current toChar
+    current.toChar
   }
   private def nextInput : Unit = {
     if (current == '\n') linenumber += 1;
@@ -41,12 +41,12 @@ class BisonScanner(input : Iterator[Char])
   }
   private def restInput : String = {
     val sb:StringBuilder = new StringBuilder;
-    if (current != NOCURRENT) sb += (current toChar);
+    if (current != NOCURRENT) sb += (current.toChar);
     current = NOCURRENT;
-    while (input hasNext) {
-      sb += (input next)
+    while (input.hasNext) {
+      sb += (input.next)
     }
-    sb toString
+    sb.toString
   }
 
   val whitespace : Set[Char] = 
@@ -84,7 +84,7 @@ class BisonScanner(input : Iterator[Char])
     } else {
       throw new GrammarSpecificationError("Meta error in readComment");
     }
-    sb toString
+    sb.toString
   }
 
   def isKeyChar(ch : Char) : Boolean = {
@@ -102,7 +102,7 @@ class BisonScanner(input : Iterator[Char])
       sb += headInput;
       nextInput
     } while (isKeyChar(headInput));
-    sb toString
+    sb.toString
   }
 
   def readQuoted(quote : Char) : String = {
@@ -120,7 +120,7 @@ class BisonScanner(input : Iterator[Char])
     sb += headInput;
     nextInput;
     
-    return sb toString
+    return sb.toString
   }
 
   def readSingleQuoted : String = {
@@ -137,7 +137,7 @@ class BisonScanner(input : Iterator[Char])
       sb += headInput;
       nextInput;
     }
-    return sb toString
+    return sb.toString
   }
 
   def convert(quoted : String) : String = {
@@ -156,7 +156,7 @@ class BisonScanner(input : Iterator[Char])
 	    case 'f' => '\f'
 	    case 'n' => '\n'
 	    case 'r' => '\r'
-	    case '0' => '\0'
+	    case '0' => '\u0000'
 	    case c => c
 	  }
 	} else {
@@ -166,7 +166,7 @@ class BisonScanner(input : Iterator[Char])
       i += 1
     }
     // println("Result is '" + sb + "'");
-    sb toString
+    sb.toString
   }
 
   abstract class State {
@@ -248,7 +248,7 @@ class BisonScanner(input : Iterator[Char])
 	    throw new GrammarSpecificationError("<TYPE unterminated");
 	  }
 	  nextInput
-	  BisonTokens.TYPELIT(sb toString)
+	  BisonTokens.TYPELIT(sb.toString)
 	}
 	case '\'' => BisonTokens.CHARLIT(convert(readQuoted('\'')).charAt(0))
 	case '"' => BisonTokens.STRINGLIT(convert(readQuoted('"')))
@@ -321,7 +321,7 @@ class BisonScanner(input : Iterator[Char])
 		   headInput != '%' &&
 		   headInput != '/' && 
 		   headInput != '\'' && headInput != '"')
-	  return BisonTokens.CODE(sb toString)
+	  return BisonTokens.CODE(sb.toString)
 	}
       }
     }

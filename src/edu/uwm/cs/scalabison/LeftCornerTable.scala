@@ -16,15 +16,17 @@
 
 package edu.uwm.cs.scalabison;
 
+import edu.uwm.cs.util.MyHashSet;
+
 import scala.collection.Set;
-import scala.collection.mutable.{HashMap,HashSet,ArrayBuffer};
+import scala.collection.mutable.{HashMap,ArrayBuffer};
 import scala.io.Source;
 
 /**
  * LeftCorner parser tables built from LALR(1) Parse tables
  */
 class LeftCornerTable(val table : Table) {
-  protected val _states : HashSet[LeftCornerState] = new HashSet;
+  protected val _states : MyHashSet[LeftCornerState] = new MyHashSet;
   def states : Set[LeftCornerState] = _states;
   private var _startState : LeftCornerState = null;
   def startState : LeftCornerState = _startState;
@@ -44,7 +46,7 @@ class LeftCornerTable(val table : Table) {
     for (state <- a) {
       sb append (state.toString(showAll))
     }
-    sb toString
+    sb.toString
   }
 
   val first : First = new First(grammar);

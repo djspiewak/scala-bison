@@ -33,7 +33,7 @@ declarations : /* EMPTY */
 
 declaration
 	: PROLOGUE_BEGIN rev_pieces PROLOGUE_END 
-		{ result.addPrologue($2 reverse); }
+		{ result.addPrologue($2 .reverse); }
 	| TOKEN token_names
         | precedence { prec = $1; } token_names
 	| TYPE TYPELIT { symbol_type = $2; } nonterminal_names
@@ -113,7 +113,7 @@ action	: block	{ $$ = (null,$1); }
 	;
 
 block	: '{' rev_pieces '}' 
-		{ $$ = BlockCode($2 reverse); }
+		{ $$ = BlockCode($2.reverse); }
 	;
 
 rev_pieces

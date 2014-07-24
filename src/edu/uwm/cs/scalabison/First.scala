@@ -69,10 +69,10 @@ class First(grammar : Grammar) extends Function[Any,FirstSet] {
 
   def first(item : Item) : FirstSet = first(item.rule.rhs.drop(item.index));
 
-  def first(l : List[Symbol]) : FirstSet = {
+  def first(l : List[Any]) : FirstSet = {
     l match {
       case Nil => FirstSet.epsilon
-      case h::t => first(h) dot first(t)
+      case h::t => apply(h) dot first(t)
     }
   }
 
@@ -80,7 +80,7 @@ class First(grammar : Grammar) extends Function[Any,FirstSet] {
     x match {
       case x:Item => first(x)
       case x:Rule => first(x)
-      case x:List[Symbol] => first(x)
+      case x:List[Any] => first(x)
       case x:Symbol => first(x)
       case _ => FirstSet.empty
     }

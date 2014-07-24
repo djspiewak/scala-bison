@@ -68,7 +68,7 @@ object TestReach extends App {
 
   def name(i:Int) : String = {
     if (i == 0) "<none>";
-    else ((i - 1 + 'A') toChar) + "";
+    else ((i - 1 + 'A').toChar) + "";
   }
 
   {

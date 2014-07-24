@@ -96,6 +96,6 @@ class Grammar {
       }
       sb append '\n';
     }
-    sb toString
+    sb.toString
   }
 }

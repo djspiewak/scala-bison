@@ -13,11 +13,10 @@ import scala.collection.immutable.ListSet;
  * node or 0 for a node without any dominator.
  */
 class Dominator(max : Int, val succ : PartialFunction[Int,Set[Int]], root : Int)
-  extends PartialFunction[Int,Int]
-{
+extends PartialFunction[Int,Int] {
   private val parent : Array[Int] = new Array(max+1);
   private val ancestor : Array[Int] = new Array(max+1);
-  private val child : Array[Int] = new Array(max+1);
+  private val child : Array[Int] = new Array(max+1);  
   private val vertex : Array[Int] = new Array(max+1);
   private val label : Array[Int] = new Array(max+1);
   private val semi : Array[Int] = new Array(max+1);
@@ -39,7 +38,7 @@ class Dominator(max : Int, val succ : PartialFunction[Int,Set[Int]], root : Int)
     size(v) = 1;
     for (w <- succ(v)) {
       if (semi(w) == 0) {
-	parent(w) = v; dfs(w)
+        parent(w) = v; dfs(w)
       }
       pred(w) += v;
     }
@@ -49,7 +48,7 @@ class Dominator(max : Int, val succ : PartialFunction[Int,Set[Int]], root : Int)
     if (ancestor(ancestor(v)) != 0) {
       compress(ancestor(v));
       if (semi(label(ancestor(v))) < semi(label(v))) {
-	label(v) = label(ancestor(v));
+        label(v) = label(ancestor(v));
       }
       ancestor(v) = ancestor(ancestor(v));
     }
@@ -70,9 +69,9 @@ class Dominator(max : Int, val succ : PartialFunction[Int,Set[Int]], root : Int)
     } else {
       compress(v);
       if (semi(label(ancestor(v))) >= semi(label(v))) {
-	label(v)
+        label(v)
       } else {
-	label(ancestor(v));
+        label(ancestor(v));
       }
     }
   }
@@ -85,12 +84,12 @@ class Dominator(max : Int, val succ : PartialFunction[Int,Set[Int]], root : Int)
     var s : Int = w;
     while (semi(label(w)) < semi(label(child(s)))) {
       if (size(s) + size(child(child(s))) >= 2 * size(child(s))) {
-	ancestor(child(s)) = s;
-	child(s) = child(child(s));
+        ancestor(child(s)) = s;
+        child(s) = child(child(s));
       } else {
-	size(child(s)) = size(s);
-	ancestor(s) = child(s);
-	s = ancestor(s);
+        size(child(s)) = size(s);
+        ancestor(s) = child(s);
+        s = ancestor(s);
       }
     }
     label(s) = label(w);
@@ -126,10 +125,10 @@ class Dominator(max : Int, val succ : PartialFunction[Int,Set[Int]], root : Int)
 
       // step 2
       for (v <- pred(w)) {
-	val u : Int = eval(v);
-	if (semi(u) < semi(w)) {
-	  semi(w) = semi(u);
-	}
+        val u : Int = eval(v);
+        if (semi(u) < semi(w)) {
+          semi(w) = semi(u);
+        }
       }
       bucket(vertex(semi(w))) += w;
       link(parent(w),w)
@@ -138,10 +137,10 @@ class Dominator(max : Int, val succ : PartialFunction[Int,Set[Int]], root : Int)
       val bucketcopy : Set[Int] = bucket(parent(w));
       bucket(parent(w)) = ListSet.empty;
       for (v <- bucketcopy) {
-	val u : Int = eval(v);
-	dom(v) = {
-	  if (semi(u) < semi(v)) u else parent(w)
-	}
+        val u : Int = eval(v);
+        dom(v) = {
+          if (semi(u) < semi(v)) u else parent(w)
+        }
       }
     }
 
@@ -149,7 +148,7 @@ class Dominator(max : Int, val succ : PartialFunction[Int,Set[Int]], root : Int)
     for (i <- 2 to n) {
       val w : Int = vertex(i);
       if (dom(w) != vertex(semi(w))) {
-	dom(w) = dom(dom(w))
+        dom(w) = dom(dom(w))
       }
     }
     dom(root) = 0;
@@ -160,7 +159,7 @@ class Dominator(max : Int, val succ : PartialFunction[Int,Set[Int]], root : Int)
   override def apply(n : Int) = dom(n);
 
   def dominates(i : Int, j : Int) : Boolean = {
-    j != 0 && (i == j || dominates(i,apply(j)))
+      j != 0 && (i == j || dominates(i,apply(j)))
   }
 }
 
@@ -168,24 +167,24 @@ object TestDominator extends App {
   val e : ListSet[Int] = ListSet.empty;
   val d : Dominator = 
     new Dominator(13, { i => i match {
-      case 13 => e + 1 + 2 + 3
-      case 1 => e + 4
-      case 2 => e + 4 + 1 + 5
-      case 3 => e + 7+6
-      case 4 => e + 12
-      case 5 => e + 8
-      case 6 => e + 9
-      case 7 => e + 9+10
-      case 8 => e + 5+11
-      case 9 => e + 11
-      case 10 => e + 9
-      case 11 => e + 9+13
-      case 12 => e + 8
+    case 13 => e + 1 + 2 + 3
+    case 1 => e + 4
+    case 2 => e + 4 + 1 + 5
+    case 3 => e + 7+6
+    case 4 => e + 12
+    case 5 => e + 8
+    case 6 => e + 9
+    case 7 => e + 9+10
+    case 8 => e + 5+11
+    case 9 => e + 11
+    case 10 => e + 9
+    case 11 => e + 9+13
+    case 12 => e + 8
     }}, 13);
 
   def name(i:Int) : String = {
     if (i == 0) "<none>";
-    else ((i - 1 + 'A') toChar) + "";
+    else ((i - 1 + 'A').toChar) + "";
   }
 
   {
@@ -194,4 +193,4 @@ object TestDominator extends App {
     }
   }
 }
-				    
+

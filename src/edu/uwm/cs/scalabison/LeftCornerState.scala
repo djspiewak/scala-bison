@@ -19,8 +19,8 @@ package edu.uwm.cs.scalabison;
 import scala.collection.Set;
 import scala.collection.immutable.ListSet;
 import scala.collection.mutable.HashMap;
-import scala.collection.mutable.HashSet;
 import scala.collection.mutable.ArrayBuffer;
+import edu.uwm.cs.util.MyHashSet;
 
 import scala.io.Source;
 
@@ -86,7 +86,7 @@ class LeftCornerState(n : Int,
     }
     println();
     */
-    var completion : HashSet[Item] = new HashSet;
+    var completion : MyHashSet[Item] = new MyHashSet;
     completion ++= core;
     var addedNT : ListSet[Nonterminal] = ListSet.empty;
     if (nonterminal != null && atStart) {
@@ -127,7 +127,7 @@ class LeftCornerState(n : Int,
   private var inited : Boolean = false;
 
   def init(first : First, lcfollow : LeftCornerFollow,
-	   states : HashSet[LeftCornerState]) : Unit = {
+	   states : MyHashSet[LeftCornerState]) : Unit = {
     if (inited) return;
     inited = true;
     val ignored = completion;
@@ -141,7 +141,7 @@ class LeftCornerState(n : Int,
       gotoItems.put(nonterminal,ListSet.empty);
     }
     for (item <- completion) {
-      if (item ready) {
+      if (item.ready) {
 	for (t <- first(item).set) {
 	  recogActions.put(t,item.rule);
 	}
@@ -305,7 +305,7 @@ class LeftCornerState(n : Int,
   }
 
   protected def makeState(first : First, lcfollow : LeftCornerFollow,
-			  states : HashSet[LeftCornerState], 
+			  states : MyHashSet[LeftCornerState], 
 			  state : State,
 			  newcore : Set[Item]) 
     : LeftCornerState = {
@@ -314,9 +314,9 @@ class LeftCornerState(n : Int,
   }
 
   protected def cacheState(first : First, lcfollow : LeftCornerFollow,
-			   states : HashSet[LeftCornerState],
+			   states : MyHashSet[LeftCornerState],
                            newState : LeftCornerState) : LeftCornerState = {
-    states.findEntry(newState) match {
+    states.getEntry(newState) match {
       case Some(s) => s; 
       case None => {
 	states += newState;

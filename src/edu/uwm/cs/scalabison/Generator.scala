@@ -20,9 +20,8 @@ import scala.io.Source
 import java.io._
 import scala.collection.Set
 import scala.collection.immutable.ListSet
-import scala.collection.mutable._;
-
-import edu.uwm.cs.util.CharUtil;
+import scala.collection.mutable._
+import edu.uwm.cs.util.CharUtil
 
 /** Generate recursive-ascent-descent parser for the given tables. 
  * This technique is inspired by Nigel Horspool's paper
@@ -89,7 +88,7 @@ class Generator(prefix : String, table : BisonTable)
     pw.println();
     pw.println("  private def yynext() = {");
     pw.println("    yycur = {");
-    pw.println("      if (yyinput hasNext) {");
+    pw.println("      if (yyinput.hasNext) {");
     pw.println("        yyinput.next");
     pw.println("      } else {");
     pw.println("        "+prefix+"Tokens.YYEOF();");
@@ -578,7 +577,7 @@ class Generator(prefix : String, table : BisonTable)
     sb append "    }\n";
     sb append "    yygoto-1\n"; // YYGoto omits "-1"
     sb append "  }\n";
-    pw.append(sb toString);
+    pw.append(sb.toString);
   }
 
   private def appendAcceptNT(sb : StringBuilder, nt : Nonterminal) : Unit = {
@@ -599,7 +598,7 @@ class Generator(prefix : String, table : BisonTable)
 			     longest : Item, 
 			     rule : Rule) = {
     // YYGOTO: This routine must be rewritten to use yynest.
-    val rp = rule getRecognitionPoint;
+    val rp = rule.getRecognitionPoint;
     var li : Int = 0;
     if (longest != null) li = longest.index;
     if (rule.lhs.typed) {
@@ -697,6 +696,9 @@ object RunGenerator {
           val dot : Int = filename.lastIndexOf('.');
           val prefix : String = 
             if (dot < 0) filename; else filename.substring(0,dot);
+          if (Options.meta_debug) {
+            println("Parsing " + filename);
+          }
           parser.reset(s,scanner);
           if (Options.meta_debug) {
             parser.yydebug = true;
@@ -706,8 +708,15 @@ object RunGenerator {
             val table : BisonTable = new BisonTable(parser.result);
             table.fromFile(prefix+".output");
             // println(table);
+            if (table.states.isEmpty) {
+              println("Error: didn't find any states in the bison outfile file.\nPerhaps this is a bison version SCalaBison doesn't understand.");
+              System.exit(-1);
+            }
             val gen : Generator = new Generator(prefix,table);
             gen.writeFiles();
+          } else {
+            println("Could not parse "+filename);
+            System.exit(-1);
           }
         } catch {
         case e:java.io.IOException => {

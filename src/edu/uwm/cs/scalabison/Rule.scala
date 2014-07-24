@@ -27,7 +27,7 @@ class Rule(val number : Int, val lhs : Nonterminal, val rhs : List[Symbol],
 
   def this(number : Int, lhs:Nonterminal, rhs:List[Symbol], 
 	   precedence : Precedence, action:Code, 
-	   ignored : Boolean) = this(number,lhs,rhs reverse,precedence,action);
+	   ignored : Boolean) = this(number,lhs,rhs.reverse,precedence,action);
 
   def length : Int = rhs.length;
 
@@ -57,6 +57,6 @@ class Rule(val number : Int, val lhs : Nonterminal, val rhs : List[Symbol],
 	sb.append(sym.name);
       }
     }
-    sb toString
+    sb.toString
   }
 }

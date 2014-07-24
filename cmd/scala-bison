@@ -1,7 +1,14 @@
 #!/bin/sh
 SCALA_BISON_HOME=`dirname $0`/..
+VERSION=`scala -version | sed 's/.*version \([0-9]*\.[0-9]*\).*/\1/'`
+JAR=$SCALA_BISON_HOME/lib/scala-bison-$VERSION.jar
+if [ ! -f $JAR ]
+then
+  echo "JAR file $JAR not found."
+  echo "You may need to fetch it from the distribution directory."
+fi
 # bison MUST be version 1.875 or later
 bison -v $1.y
 rm $1.tab.c
-scala -cp $SCALA_BISON_HOME/scala-bison.jar -howtorun:object edu.uwm.cs.scalabison.RunGenerator -v $1.y
+scala -cp $JAR -howtorun:object edu.uwm.cs.scalabison.RunGenerator -v $1.y
 rm $1.output

@@ -1,18 +1,51 @@
 ScalaBison -- Generate LAXLC(1) parsers in Scala from bison input and output files.
 
 Release Notes
-Version 0.83, October 2012
+Version 0.99, July 2014
 
 Please see LICENSE for software licensing.
 
-(1) Compiling ScalaBison
+
+(1) Downloading
+
+You need the cmd/scala-bison and lib/scala-bison-$VERSION.jar.
+The former is available in the source tree, the latter in the release
+area.  $VERSION is the Scala version (2.9, 2.10 or 2.11)
+
+You must also have bison installed.  ScalaBison uses it.
+
+(2) Installation
+
+  There is no automatic installation.  Minimally you need:
+      SCALABISONDIR/cmd/scala-bison
+      SCALABISONDIR/lib/scala-bison-$VERSION.jar
+  where SCALABISONDIR is a path such as "/usr/local". 
+
+  The scala-bison script assumes "bison" is in teh default path.
+  
+(3) Using ScalaBison
+
+  In lieu of documentation: here's the basic way to use ScalaBison
+
+  (a) Create a bison-style xxx.y file.  
+      Unlike bison, ScalaBison requires every grammar production
+      to end with a semicolon.  (Semicolons are optional in bison).
+
+  (b) run scala-bison xxx.y to create two files: XXXParser.scala and XXXTokens.scala
+  
+  (c) Move these files into the correct Scala package and then compile with the Scala compiler.
+      (ScalaBison generated parsers do not need or use the scala-bison.jar.)
+
+-----------------------------------------------------------------------------------------------
+
+(4) Compiling ScalaBison from source
 
   ScalaBison is bootstrapped through itself.  Thus you need
   scalabison.jar before you can build ScalaBison, and thus create
   the JAR file.
 
-  You can download scala-bison.jar from github:
-	https://github.com/downloads/djspiewak/scala-bison/scala-bison.jar
+  You can use one of the released scala-bison-$VERSION files, but 
+  will need to put it in the root directory of the source and name it "scala-bison.jar"
 
   Then using "make"
 	make boot
@@ -24,29 +57,5 @@ Please see LICENSE for software licensing.
 	make compile
 	make
   Now you have a scala-bison generated and compiled by itself.
-
-
-(2) Installation
-
-  There is no automatic installation.  You may find the script
-	cmd/scala-bison
-  useful.
-
-
-(3) Using ScalaBison
-
-  In lieu of documentation: here's the basic way to use ScalaBison
-
-  (a) Create a bison-style xxx.y file.  
-      Unlike bison, ScalaBison requires every grammar production
-      to end with a semicolon.  (Semicolons are optional in bison).
-
-  (b) Run bison, as in:
-	bison -v xxx.y
-      Discard/ignore the xxx.tab.x file.
-
-  (c) Run ScalaBison, using:
-	scala -cp scala-bison.jar -howtorun:object edu.uwm.cs.scalabison.RunGenerator [-t] [-v] xxx.y
-      The result is in xxx.scala
 
   

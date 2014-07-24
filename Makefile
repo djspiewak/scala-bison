@@ -7,8 +7,7 @@ scala-bison.jar :
 	then \
 	  make compile && make scala-bison.jar; \
 	else \
-	  echo "Need to fetch scala-bison.jar from the distribution site, e.g. "; \
-	  echo "https://github.com/downloads/djspiewak/scala-bison/scala-bison.jar"; \
+	  echo "Need to fetch scala-bison.jar from the distribution site."; \
 	fi
 
 .PHONY: compile
@@ -41,6 +40,16 @@ boot-trace: scala-bison.jar
 clean : 
 	rm -fr Bison* scala-bison.jar bin/edu
 	 
+.PHONY: all-jar
+all-jar: jar2.9 jar2.10 jar2.11
+ 
+.PHONY: jar2.*
+
+jar2.% : clean
+	mkdir -p bin
+	(cd src; scalac-2.$* -d ../bin edu/uwm/cs/util/*.scala edu/uwm/cs/scalabison/*.scala)
+	jar cf lib/scala-bison-2.$*.jar -C bin edu
+	    	 
 .PHONY: %.lcoutput
 %.lcoutput : %.y
 	bison -n -v $*.y

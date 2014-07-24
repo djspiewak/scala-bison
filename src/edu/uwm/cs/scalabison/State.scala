@@ -39,7 +39,9 @@ class State(val number : Int, val core : Set[Item]) {
 
   private var _default : Action = null;
   def default : Action = _default;
-  def default_=(a : Action) : Unit = _default = a;
+  def default_=(a : Action) : Unit = {
+    _default = a;
+  }
 
   override def equals(a : Any) : Boolean = {
     a match {
@@ -117,60 +119,60 @@ class State(val number : Int, val core : Set[Item]) {
     }
     // 2. then the successor relation
     val succ : PartialFunction[Int,scala.collection.Set[Int]] = {
-      i:Int => i match {
-	case 1 => {
-	  var s : ListSet[Int] = ListSet.empty;
-	  for (item <- core) {
-	    s = s + index(item)
-	  }
-	  s
-	}
-	case _ =>
-	  nodes(i) match {
-	    case _:Action => ListSet.empty
-	    case item:Item => {
-	      item.symbol match {
-		case t:Terminal => {
-		  actions.get(t) match {
-		    case Some(a:ShiftAction) => ListSet.empty + index(a);
-		    case Some(a:ErrorAction) => ListSet.empty + index(a);
-		    case _ => ListSet.empty
-		  }
-		}
-		case nt:Nonterminal => {
-		  var s : ListSet[Int] = ListSet.empty;
-		  for (rule <- nt.rules) {
-		    s = s + index(new Item(rule,0));
-		  }
-		  s
-		}
-		case null => {
-		  val red : ReduceAction = ReduceAction(item.rule);
-		  if (actionset contains red)
-		    ListSet.empty + index(red)
-		  else if (default == AcceptAction())
-		    ListSet.empty + index(AcceptAction())
-		  else
-		    ListSet.empty
-		}
-	      }
-	    }
-	  }
-      }
+        i:Int => i match {
+        case 1 => {
+          var s : ListSet[Int] = ListSet.empty;
+        for (item <- core) {
+          s = s + index(item)
+        }
+        s
+        }
+        case _ =>
+        nodes(i) match {
+        case _:Action => ListSet.empty
+        case item:Item => {
+          item.symbol match {
+          case t:Terminal => {
+            actions.get(t) match {
+            case Some(a:ShiftAction) => ListSet.empty + index(a);
+            case Some(a:ErrorAction) => ListSet.empty + index(a);
+            case _ => ListSet.empty
+            }
+          }
+          case nt:Nonterminal => {
+            var s : ListSet[Int] = ListSet.empty;
+          for (rule <- nt.rules) {
+            s = s + index(new Item(rule,0));
+          }
+          s
+          }
+          case null => {
+            val red : ReduceAction = ReduceAction(item.rule);
+          if (actionset contains red)
+            ListSet.empty + index(red)
+            else if (_default == AcceptAction())
+              ListSet.empty + index(AcceptAction())
+              else
+                ListSet.empty
+          }
+          }
+        }
+        }
+        }
     };
-    if (Options.verbose > 2) {
+    if (Options.meta_debug) {
       println("Graph of state (for computing free positions)");
       for (i <- 1 until nodes.size) {
-	print("  " + i + ": ");
-	nodes(i) match {
-	  case null => println("[INIT]") 
-	  case x => println(x);
-	  }
-	print("    ->");
-	for (j <- succ(i)) {
-	  print(" " + j);
-	}
-	println();
+        print("  " + i + ": ");
+        nodes(i) match {
+        case null => println("[INIT]") 
+        case x => println(x);
+        }
+        print("    ->");
+        for (j <- succ(i)) {
+          print(" " + j);
+        }
+        println();
       }
     }
     // 3. now compute reachability and domination:
@@ -266,6 +268,6 @@ class State(val number : Int, val core : Set[Item]) {
       sb append '\n'
     }
     sb append '\n'
-    sb toString
+    sb.toString
   }
 }

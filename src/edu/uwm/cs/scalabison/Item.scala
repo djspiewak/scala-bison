@@ -54,7 +54,7 @@ class Item(val rule : Rule, val index : Int)  {
     if (index == i) {
       sb append " .";
     }
-    sb toString
+    sb.toString
   }
 
 }

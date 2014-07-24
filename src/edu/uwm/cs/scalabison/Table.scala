@@ -33,7 +33,7 @@ class Table(val grammar : Grammar) {
     for (state <- states) {
       sb append (state.toString(showAll))
     }
-    sb toString
+    sb.toString
   }
 
   private var nonfree : HashSet[Item] = null;

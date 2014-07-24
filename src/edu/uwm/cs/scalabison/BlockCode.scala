@@ -18,6 +18,6 @@ package edu.uwm.cs.scalabison;
 
 case class BlockCode(cl : List[Code]) extends Code { 
   override def toString : String = {
-    "{" + (cl foldRight "}")((c:Code,s:String) => (c toString) + s);
+    "{" + (cl foldRight "}")((c:Code,s:String) => (c.toString) + s);
   }
 }

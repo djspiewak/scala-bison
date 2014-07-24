@@ -16,8 +16,8 @@
 
 package edu.uwm.cs.scalabison;
 
-import scala.io.Source;
-import scala.collection.mutable.Set;
+import scala.io.Source
+import scala.collection.mutable.Set
 import scala.collection.mutable.HashSet;
 
 
@@ -27,16 +27,20 @@ import scala.collection.mutable.HashSet;
 class BisonTable(val bison : BisonGrammar) extends Table(bison) {
 
   def fromFile(filename : String) = {
+    if (Options.meta_debug) {
+      println("Reading bison output " + filename);
+    }
     val s : Source = Source.fromFile(filename);
     getStates(s);
     s.reset();
     getActions(Source.fromFile(filename))
   }
-
+  
   private def skipToStates(it : Iterator[String]) : Int = {
     for (s <- it) {
-      if (s.startsWith("state ")) {
-        return Integer.parseInt(s.substring(6,s.length));
+      if (s.startsWith("state ") || s.startsWith("State ")) {
+        val stateNum = Integer.parseInt(s.substring(6,s.length))
+        return stateNum;
       }
     }
     -1
@@ -52,9 +56,19 @@ class BisonTable(val bison : BisonGrammar) extends Table(bison) {
 
   private def getState(it : Iterator[String]) : State = {
     val is : Set[Item] = new HashSet[Item]();
+    /*if (expectTwoEmpty) {
+      val first = it.next;
+      if (!first.equals("\n")) {
+        println("Unexpected bison output file format: expected blank line: " + first);
+        System.exit(-1);
+      }
+    }*/
     for (s <- it) {
-      if (s.equals("") || s.equals("\n")) return new State(states.length,is);
-      is += Item.fromLine(grammar,s);
+      if (s.equals("") || s.equals("\n")) {
+        return new State(states.length,is);
+      } else {
+        is += Item.fromLine(grammar,s);
+      }
     }
     throw new GrammarSpecificationError("unexpected EOF")
   }
