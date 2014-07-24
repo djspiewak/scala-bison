@@ -36,6 +36,9 @@ You must also have bison installed.  ScalaBison uses it.
   (c) Move these files into the correct Scala package and then compile with the Scala compiler.
       (ScalaBison generated parsers do not need or use the scala-bison.jar.)
 
+Interested in a Scanner generator for Scala too?
+See https://github.com/moy/JFlex/tree/1.5+scala
+
 -----------------------------------------------------------------------------------------------
 
 (4) Compiling ScalaBison from source
