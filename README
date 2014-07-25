@@ -8,20 +8,20 @@ Please see LICENSE for software licensing.
 
 (1) Downloading
 
-You need the cmd/scala-bison and lib/scala-bison-$VERSION.jar.
-The former is available in the source tree, the latter in the release
-area.  $VERSION is the Scala version (2.9, 2.10 or 2.11)
+You need the cmd/scala-bison and lib/scala-bison-$VERSION.jar
+from the release area.  The former (but not the latter) is also available
+in the source tree.  $VERSION is the Scala version (2.9, 2.10 or 2.11)
 
 You must also have bison installed.  ScalaBison uses it.
 
 (2) Installation
 
   There is no automatic installation.  Minimally you need:
-      SCALABISONDIR/cmd/scala-bison
+      SCALABISONDIR/X/scala-bison
       SCALABISONDIR/lib/scala-bison-$VERSION.jar
-  where SCALABISONDIR is a path such as "/usr/local". 
+  where SCALABISONDIR is a path such as "/usr/local", and "X" is "cmd" or "bin" or the like.
 
-  The scala-bison script assumes "bison" is in teh default path.
+  The scala-bison script assumes "bison" is in the default path.
   
 (3) Using ScalaBison
 
