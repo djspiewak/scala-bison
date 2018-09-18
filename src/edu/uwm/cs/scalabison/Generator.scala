@@ -210,6 +210,10 @@ class Generator(prefix : String, table : BisonTable)
       writeState(pw,state);
     }
     pw.println(table.bison.extra);
+    
+    if (Options.gen_lalr_table) {
+      writeLALRTable(pw);
+    }
     pw.println("}");
     pw.close();
   }
@@ -249,6 +253,9 @@ class Generator(prefix : String, table : BisonTable)
       }
       case _ => ()
       }
+    }
+    if (Options.gen_lalr_table) {
+      pw.println("  case class YYNT(num : Int) extends YYNonterminal;");
     }
   }
 
@@ -659,6 +666,68 @@ class Generator(prefix : String, table : BisonTable)
     }
     nonempty;
   }
+  
+  private def writeLALRTable(pw : PrintWriter) {
+    pw.print("""  abstract class YYAction;
+  case class YYAshift(state : Int) extends YYAction;
+  case class YYAreduce(rule : Int, nt:YYNonterminal, size : Int) extends YYAction;
+  case class YYAerror(reason : String) extends YYAction;
+  case class YYAaccept() extends YYAction;
+
+  private var table : Array[Function[CoolTokens.YYSymbol,YYAction]] = Array(""");
+      var started : Boolean = false;
+      for (state <- table.states) {
+        if (started) pw.print(","); else started = true;
+        pw.println("\n    (x => x match {");
+        for ((t,action) <- state.actions) {
+          pw.print("      case " + prefix + "Tokens.");
+          t match {
+            case CharLitTerminal(ch) => pw.print("YYCHAR(" + toLit(ch) + ")");
+            case _ => pw.print(t.name + (if (t.typed) "(_)" else "()"));
+          }
+          pw.print(" => ");
+          writeAction(pw,action);
+          pw.println();
+        }
+        for ((nt,st) <- state.gotos) {
+          val nts = 
+             if (nt.name.startsWith("@")) "(" + nt.name.substring(1) + ")"
+             else if (nt.typed) nt.name + "(_)"
+             else if (nt.name == "error") nt.name + "(_)"; 
+             else nt.name + "()";
+          pw.println("      case YYNT" + nts + " => YYAshift(" + st.number + ")");
+        }
+        pw.print("      case _ => ");
+        var defAction : Action = state.default;
+        if (defAction == null) defAction = ErrorAction("parse error");
+        writeAction(pw,defAction);
+        pw.print("})");
+      }
+      pw.println(");\n");
+      pw.println("  val MAX_STATE = table.length-1;\n");
+      pw.println("  def getAction(state : Int, s : " + prefix + "Tokens.YYSymbol) : YYAction = table(state)(s);");
+  }
+  
+  private def writeAction(pw: PrintWriter, action: Action): Unit = {
+    action match {
+      case AcceptAction() => pw.print("YYAaccept()");
+      case ErrorAction(reason) => pw.print("YYAerror(\"" + reason + "\")");
+      case ShiftAction(target) => {
+        val st = target.number;
+        pw.print("YYAshift(" + st + ")");
+      }
+      case ReduceAction(rule) => {
+        val nt = rule.lhs;
+          val nts = 
+             if (nt.name.startsWith("@")) "(" + nt.name.substring(1) + ")"
+             else if (nt.getType() == "Boolean") nt.name + "(false)"
+             else if (nt.getType() == "Int") nt.name + "(0)"
+             else if (nt.typed) nt.name + "(null)"
+             else nt.name + "()";
+        pw.print("YYAreduce(" + rule.number + ", YYNT" + nts + ", " + rule.rhs.length + ")");
+      }
+    }
+  }
 }
 
 object RunGenerator {
@@ -687,6 +756,11 @@ object RunGenerator {
         Options.debug = true;
       } else if (s == "-T" || s == "--meta-debug") {
         Options.meta_debug = true;
+      } else if (s == "-d" || s == "--lalr-table") {
+        Options.gen_lalr_table = true;
+      } else if (s.startsWith("-")) {
+        println("Unknown option " + s + "; use --help to get legal options");
+        System.exit(-1);
       } else {
         try {
           val scanner : BisonScanner = new BisonScanner(Source.fromFile(s))

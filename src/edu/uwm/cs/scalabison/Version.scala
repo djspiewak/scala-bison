@@ -1,7 +1,7 @@
 package edu.uwm.cs.scalabison;
 
 object Version {
-  val version : String = "1.0";
+  val version : String = "1.1";
 }
 
 // History:
@@ -20,3 +20,4 @@ object Version {
 // 0.84: Updated for Scala 2.10
 // 0.99: Updated for Scala 2.11 and Release candidate 1
 // 1.0: Handle conflicts in grammars
+// 1.1: Added back "-d" option from 2010 (used for CS 854 at UWM).
