@@ -1,7 +1,7 @@
 ScalaBison -- Generate LAXLC(1) parsers in Scala from bison input and output files.
 
 Release Notes
-Version 0.99, July 2014
+Version 1.0, September 2015
 
 Please see LICENSE for software licensing.
 

@@ -1,7 +1,7 @@
 package edu.uwm.cs.scalabison;
 
 object Version {
-  val version : String = "0.99";
+  val version : String = "1.0";
 }
 
 // History:
@@ -18,4 +18,5 @@ object Version {
 // 0.82: More support for '\x' terminals, primitive type nonterminals
 // 0.83: added support for bison 2.6.2, re-bootstrapped
 // 0.84: Updated for Scala 2.10
-// 0.99: Updated for Scala 2.11 and Release candidate
+// 0.99: Updated for Scala 2.11 and Release candidate 1
+// 1.0: Handle conflicts in grammars
