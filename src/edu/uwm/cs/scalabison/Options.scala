@@ -20,4 +20,5 @@ object Options {
   var verbose : Int = 0;
   var debug : Boolean = false;
   var meta_debug : Boolean = false;
+  var gen_lalr_table : Boolean = false;
 }

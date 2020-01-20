@@ -39,8 +39,11 @@ class BisonTable(val bison : BisonGrammar) extends Table(bison) {
   private def skipToStates(it : Iterator[String]) : Int = {
     for (s <- it) {
       if (s.startsWith("state ") || s.startsWith("State ")) {
-        val stateNum = Integer.parseInt(s.substring(6,s.length))
-        return stateNum;
+        val rest = s.substring(6,s.length)
+        if (!rest.contains(':')) { 
+          val stateNum = Integer.parseInt(rest)
+          return stateNum;
+        }
       }
     }
     -1
