@@ -20,7 +20,7 @@ import scala.collection.Set;
 import scala.collection.immutable.ListSet;
 import scala.collection.mutable.HashMap;
 import scala.collection.mutable.ArrayBuffer;
-import edu.uwm.cs.util.MyHashSet;
+import scala.collection.mutable.HashSet;
 
 import scala.io.Source;
 
@@ -86,7 +86,7 @@ class LeftCornerState(n : Int,
     }
     println();
     */
-    var completion : MyHashSet[Item] = new MyHashSet;
+    var completion : HashSet[Item] = new HashSet;
     completion ++= core;
     var addedNT : ListSet[Nonterminal] = ListSet.empty;
     if (nonterminal != null && atStart) {
@@ -127,7 +127,7 @@ class LeftCornerState(n : Int,
   private var inited : Boolean = false;
 
   def init(first : First, lcfollow : LeftCornerFollow,
-	   states : MyHashSet[LeftCornerState]) : Unit = {
+	   states : HashSet[LeftCornerState]) : Unit = {
     if (inited) return;
     inited = true;
     val ignored = completion;
@@ -305,7 +305,7 @@ class LeftCornerState(n : Int,
   }
 
   protected def makeState(first : First, lcfollow : LeftCornerFollow,
-			  states : MyHashSet[LeftCornerState], 
+			  states : HashSet[LeftCornerState], 
 			  state : State,
 			  newcore : Set[Item]) 
     : LeftCornerState = {
@@ -314,9 +314,9 @@ class LeftCornerState(n : Int,
   }
 
   protected def cacheState(first : First, lcfollow : LeftCornerFollow,
-			   states : MyHashSet[LeftCornerState],
+			   states : HashSet[LeftCornerState],
                            newState : LeftCornerState) : LeftCornerState = {
-    states.getEntry(newState) match {
+    states.findEntry(newState) match {
       case Some(s) => s; 
       case None => {
 	states += newState;

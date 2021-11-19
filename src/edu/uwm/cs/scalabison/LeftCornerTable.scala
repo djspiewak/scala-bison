@@ -16,7 +16,7 @@
 
 package edu.uwm.cs.scalabison;
 
-import edu.uwm.cs.util.MyHashSet;
+import scala.collection.mutable.HashSet;
 
 import scala.collection.Set;
 import scala.collection.mutable.{HashMap,ArrayBuffer};
@@ -26,7 +26,7 @@ import scala.io.Source;
  * LeftCorner parser tables built from LALR(1) Parse tables
  */
 class LeftCornerTable(val table : Table) {
-  protected val _states : MyHashSet[LeftCornerState] = new MyHashSet;
+  protected val _states : HashSet[LeftCornerState] = new HashSet;
   def states : Set[LeftCornerState] = _states;
   private var _startState : LeftCornerState = null;
   def startState : LeftCornerState = _startState;

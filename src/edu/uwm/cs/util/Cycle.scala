@@ -1,4 +1,4 @@
-/* Dtermining which nodes are in cycles in a graph.
+/* Determining which nodes are in cycles in a graph.
  * John Boyland
  * This file may be used, copied and/or modified for any purpose.
  */
