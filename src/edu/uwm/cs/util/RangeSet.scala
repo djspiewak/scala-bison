@@ -17,6 +17,8 @@ class RangeSet(val range : Range) extends Set[Int]
   override def -(elem : Int) : Set[Int] = throw new UnsupportedOperationException("RangeSet#-");
   override def +(elem : Int) : Set[Int] = throw new UnsupportedOperationException("RangeSet#+");
   override def iterator : Iterator[Int] = range.iterator;
+
+  override def diff(that: Set[Int]): Set[Int] = this.diff(that)
 }
 
 object TestRangeSet extends App {

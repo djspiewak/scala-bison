@@ -316,7 +316,7 @@ class LeftCornerState(n : Int,
   protected def cacheState(first : First, lcfollow : LeftCornerFollow,
 			   states : HashSet[LeftCornerState],
                            newState : LeftCornerState) : LeftCornerState = {
-    states.findEntry(newState) match {
+    states.find(_ == newState) match {
       case Some(s) => s; 
       case None => {
 	states += newState;
