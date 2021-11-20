@@ -22,7 +22,7 @@ PDIR = src/edu/uwm/cs/scalabison/
 boot : scala-bison.jar
 	bison -v ${PDIR}/Bison.y
 	rm Bison.tab.c
-	scala -cp scala-bison.jar -howtorun:object edu.uwm.cs.scalabison.Generator ${PDIR}/Bison.y
+	scala -cp scala-bison.jar -howtorun:object edu.uwm.cs.scalabison.RunGenerator ${PDIR}/Bison.y
 	rm Bison.output
 	cp BisonParser.scala BisonTokens.scala ${PDIR}/.
 	@echo "Now refresh/rebuild the project"
@@ -31,7 +31,7 @@ boot : scala-bison.jar
 boot-trace: scala-bison.jar
 	bison -v ${PDIR}/Bison.y
 	rm Bison.tab.c
-	scala -cp scala-bison.jar -howtorun:object edu.uwm.cs.scalabison.Generator -t -T ${PDIR}/Bison.y
+	scala -cp scala-bison.jar -howtorun:object edu.uwm.cs.scalabison.RunGenerator -t -T ${PDIR}/Bison.y
 	rm Bison.output
 	cp BisonParser.scala BisonTokens.scala ${PDIR}/.
 	@echo "Now refresh/rebuild the project"
