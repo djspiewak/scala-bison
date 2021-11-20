@@ -667,7 +667,7 @@ class Generator(prefix : String, table : BisonTable)
     nonempty;
   }
   
-  private def writeLALRTable(pw : PrintWriter) {
+  private def writeLALRTable(pw : PrintWriter) = {
     pw.print("""  abstract class YYAction;
   case class YYAshift(state : Int) extends YYAction;
   case class YYAreduce(rule : Int, nt:YYNonterminal, size : Int) extends YYAction;
