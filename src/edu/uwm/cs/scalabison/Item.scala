@@ -71,7 +71,7 @@ object Item {
 					  " not " + rule.lhs.name);
     }
     for (i <- 1 until (parts.length)) {
-      if (parts(i).equals(".")) {
+      if (parts(i).equals(".") || parts(i).equals("•")) {
 	val item : Item = new Item(rule,i-1);
 	/*
 	if (!itemtext.equals(item.toString())) {
