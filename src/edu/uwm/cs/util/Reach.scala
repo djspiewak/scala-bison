@@ -1,4 +1,4 @@
-/* Dtermining which nodes are in cycles in a graph.
+/* Reachability computation of nodes in a graph.
  * John Boyland
  * This file may be used, copied and/or modified for any purpose.
  */
@@ -68,7 +68,7 @@ object TestReach extends App {
 
   def name(i:Int) : String = {
     if (i == 0) "<none>";
-    else ((i - 1 + 'A').toChar) + "";
+    else ((i - 1 + 'A').toChar).toString();
   }
 
   {
